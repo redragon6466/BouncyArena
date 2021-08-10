@@ -214,13 +214,31 @@ namespace Assets
             
         }
 
+        IEnumerator ExampleCoroutine(float time)
+        {
+            //Print the time of when the function is first called.
+            Debug.Log("Started Coroutine at timestamp : " + Time.time);
+
+            //yield on a new YieldInstruction that waits for 5 seconds.
+            yield return new WaitForSeconds(time);
+
+            //After we have waited 5 seconds print the time again.
+            Debug.Log("Finished Coroutine at timestamp : " + Time.time);
+            EndBattleTwoEletricbogaloo();
+        }
+
         public void EndBattle()
         {
             IsBattling = false;
             _vsTimer = 0;
 
+            //add delay????
+            StartCoroutine(ExampleCoroutine(3));
 
+        }
 
+        public void EndBattleTwoEletricbogaloo()
+        {
             //delete all blobs and find winning team
             var temp = TeamOneBlobs.ToList();
             int team = 0;
@@ -238,18 +256,16 @@ namespace Assets
                 Destroy(b.gameObject);
             }
 
-            
+
             //todo DRAW mechanics
 
             Debug.Log("Team " + team + " Wins!");
-            Task task = new Task(() => UpdateBalancesOnRoundEnd(team)); 
+            Task task = new Task(() => UpdateBalancesOnRoundEnd(team));
             task.Start();
 
             SceneManager.LoadScene("Lineup");
 
             StartCoroutine(DelayOneFrame());
-
-
         }
 
         /// <summary>
@@ -270,6 +286,7 @@ namespace Assets
 
             if (TeamOneBlobs.Count == 0 || TeamTwoBlobs.Count == 0)
             {
+                GameObject.Destroy(blob.gameObject);
                 EndBattle();
                 return;
             }

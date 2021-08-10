@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Combatant
+  - CountDown
+  - Arena
   layers:
   - Default
   - TransparentFX

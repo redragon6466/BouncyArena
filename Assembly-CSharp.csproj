@@ -47,20 +47,20 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\PingSender.cs" />
      <Compile Include="Assets\Scripts\Target.cs" />
-     <Compile Include="Assets\Scripts\Combatant.cs" />
-     <Compile Include="Assets\Scripts\Services\BettingService.cs" />
+     <Compile Include="Assets\Scripts\SQLiteExample.cs" />
      <Compile Include="Assets\Scripts\Data\IDataService.cs" />
-     <Compile Include="Assets\Scripts\God.cs" />
-     <Compile Include="Assets\Scripts\Services\Containers\Bet.cs" />
-     <Compile Include="Assets\Scripts\Data\SubscriptionTierEnum.cs" />
      <Compile Include="Assets\Scripts\Services\Interfaces\IBettingService.cs" />
-     <Compile Include="Assets\Scripts\Data\DataService.cs" />
+     <Compile Include="Assets\Scripts\Combatant.cs" />
      <Compile Include="Assets\Scripts\Data\Viewer.cs" />
      <Compile Include="Assets\Scripts\TwitchChatBot.cs" />
-     <Compile Include="Assets\Scripts\SQLiteExample.cs" />
+     <Compile Include="Assets\Scripts\God.cs" />
+     <Compile Include="Assets\Scripts\Data\DataService.cs" />
+     <Compile Include="Assets\Scripts\Services\BettingService.cs" />
      <Compile Include="Assets\Scripts\IrcClient.cs" />
-     <Compile Include="Assets\Scripts\PingSender.cs" />
+     <Compile Include="Assets\Scripts\Data\SubscriptionTierEnum.cs" />
+     <Compile Include="Assets\Scripts\Services\Containers\Bet.cs" />
      <None Include="Assets\Cartoon Textures\README.txt" />
  <Reference Include="UnityEngine">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.15f2/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
@@ -284,9 +284,6 @@
  <Reference Include="UnityEditor.UnityConnectModule">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.15f2/Editor/Data/Managed/UnityEngine/UnityEditor.UnityConnectModule.dll</HintPath>
  </Reference>
- <Reference Include="Newtonsoft.Json">
- <HintPath>D:/Projects/BouncyArena/New Unity Project/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
- </Reference>
  <Reference Include="System.EnterpriseServices">
  <HintPath>D:/Projects/BouncyArena/New Unity Project/Assets/Plugins/SQLite/System.EnterpriseServices.dll</HintPath>
  </Reference>
@@ -301,6 +298,9 @@
  </Reference>
  <Reference Include="Mono.Data.SqliteClient">
  <HintPath>D:/Projects/BouncyArena/New Unity Project/Assets/Plugins/SQLite/Mono.Data.SqliteClient.dll</HintPath>
+ </Reference>
+ <Reference Include="Newtonsoft.Json">
+ <HintPath>D:/Projects/BouncyArena/New Unity Project/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
  </Reference>
  <Reference Include="netstandard">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.15f2/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>

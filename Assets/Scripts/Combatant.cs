@@ -72,14 +72,7 @@ public class Combatant : MonoBehaviour
             body.velocity = Vector3.ClampMagnitude(body.velocity, maxSpeed);
         }
 
-        var loc = target.transform;
-
-
-        Vector3 newVector = loc.position - transform.position;
-        //Debug.Log(" x: " + newVector.x + " y: " + newVector.y + " z: " + newVector.z);
-
-        //propel the object forward
-        GetComponent<Rigidbody>().AddForce(10 * newVector.x, -1, 10 *newVector.z);
+       
 
     }
 
@@ -177,7 +170,19 @@ public class Combatant : MonoBehaviour
             }
             
         }
-        
+
+        if (collisionInfo.gameObject.tag == "Arena")
+        {
+
+            var loc = target.transform;
+
+
+            Vector3 newVector = loc.position - transform.position;
+            //Debug.Log(" x: " + newVector.x + " y: " + newVector.y + " z: " + newVector.z);
+
+            //propel the object forward
+            GetComponent<Rigidbody>().AddForce(200 * newVector.x, 10, 200 * newVector.z);
+        }
 
         //Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
         //Debug.Log("There are " + collisionInfo.contacts.Length + " point(s) of contacts");
