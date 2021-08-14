@@ -55,7 +55,7 @@ namespace Assets
             {
                 // Read any message from the chat room
                 string message = irc.ReadMessage();
-                Console.WriteLine(message); // Print raw irc messages
+                Debug.Log(message); // Print raw irc messages
 
                 if (message.Contains("PRIVMSG"))
                 {
@@ -115,6 +115,23 @@ namespace Assets
                             irc.SendPublicChatMessage(string.Format("Sorry {0} you don't have enough money, your balance is {1}. ", userName, bal));
                         }
                         BettingService.Instance.AddBetToTeam(userName, amount, team);
+                    }
+
+                    if (message.StartsWith("!add"))
+                    {
+                        var msg = message.Split(' ');
+                        if (!int.TryParse(msg[1], out int amount))
+                        {
+                            irc.SendPublicChatMessage(string.Format("Could not parse  amount of {0}", message));
+                            continue;
+                        }
+
+                        DataService.Instance.UpdateBalance(userName, amount);
+                    }
+
+                    if (message.StartsWith("!new"))
+                    {
+                        DataService.Instance.NewViewer(userName);
                     }
                 }
             }

@@ -120,7 +120,7 @@ namespace Assets.Data
 
                 using (var dbCommand = dbConnection.CreateCommand())
                 {
-
+                    //TODO ADD new view if not already in
                     dbCommand.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @whereValue", _databaseName, "viewerName");
 
 

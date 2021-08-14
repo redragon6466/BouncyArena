@@ -139,6 +139,11 @@ namespace Assets
         {
             if (Input.GetKey("escape"))
             {
+
+                if (tcb != null)
+                {
+                    tcb.OnEnd();
+                }
                 Application.Quit();
             }
 
