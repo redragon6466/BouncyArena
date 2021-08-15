@@ -1,11 +1,16 @@
-﻿using Assets.Services.Containers;
+﻿using Assets.Scripts.Services.Containers;
+using Assets.Services.Containers;
 using Assets.Services.Interfaces;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+
 
 namespace Assets.Services
 {
@@ -42,29 +47,6 @@ namespace Assets.Services
             }
         }
 
-        public void AddBetToTeam(string viewername, int amount, int team)
-        {
-            Debug.Log("Add bet to team: " + viewername + ", " + amount +", " +team);
-            if (team == 1)
-            {
-                var bet = new Bet(viewername, amount);
-                lock (teamOnePoolLock)
-                {
-                    TeamOneBets.Add(bet);
-                    TeamOnePool += amount;
-                }
-            }
-            if (team == 2)
-            {
-                var bet = new Bet(viewername, amount);
-                lock (teamTwoPoolLock)
-                {
-                    TeamTwoBets.Add(bet);
-                    TeamTwoPool += amount;
-                }
-            }
-        }
-
         
 
         public void StartNewRound()
@@ -81,7 +63,21 @@ namespace Assets.Services
             }
         }
 
-        public List<Tuple<string, int>> PayoutBets(int winningTeam)
+        
+        public void PayoutBets(int winningTeam)
+        {
+            Task.Factory.StartNew(() => SendHttpWinner(winningTeam));
+
+
+        }
+
+        void SendHttpWinner(int winningTeam)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(String.Format("https://localhost:44369/Home/PayoutBet?winningTeam={0}", winningTeam));
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+        }
+
+        public List<Bet> GetWinningBets(int winningTeam)
         {
             Debug.Log("Pay Bets");
             var winning = new List<Tuple<string, int>>();
@@ -107,7 +103,9 @@ namespace Assets.Services
                 
             }
 
-            Debug.Log(bets.Count);
+            return bets;
+            
+                /*Debug.Log(bets.Count);
             foreach (var bet in bets)
             {
                 var payout = (int)((float)bet.Amount / pool * pot);
@@ -115,7 +113,7 @@ namespace Assets.Services
                 winning.Add(new Tuple<string, int>(bet.ViewerName, payout));
             }
 
-            return winning;
+            return winning;*/
         }
 
         public List<Bet> GetTeamOneBets()
@@ -138,5 +136,33 @@ namespace Assets.Services
             }
             return returned;
         }
+
+        public void AddBetToTeam(string viewername, int amount, int team)
+        {
+            if (amount < 1 || amount > 5000000)
+            {
+                return;
+            }
+            Debug.Log("Add bet to team: " + viewername + ", " + amount + ", " + team);
+            if (team == 1)
+            {
+                var bet = new Bet(viewername, amount);
+                lock (teamOnePoolLock)
+                {
+                    TeamOneBets.Add(bet);
+                    TeamOnePool += amount;
+                }
+            }
+            if (team == 2)
+            {
+                var bet = new Bet(viewername, amount);
+                lock (teamTwoPoolLock)
+                {
+                    TeamTwoBets.Add(bet);
+                    TeamTwoPool += amount;
+                }
+            }
+        }
+
     }
 }

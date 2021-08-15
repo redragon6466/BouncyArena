@@ -124,6 +124,11 @@ public class Combatant : MonoBehaviour
         return roll + totalMod;
     }
 
+    public void OnDestroy()
+    {
+        target = null;
+    }
+
 
     void OnCollisionEnter(Collision collisionInfo)
     {

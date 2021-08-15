@@ -57,8 +57,9 @@
      <Compile Include="Assets\Scripts\TwitchChatBot.cs" />
      <Compile Include="Assets\Scripts\God.cs" />
      <Compile Include="Assets\Scripts\Data\DataService.cs" />
-     <Compile Include="Assets\Scripts\Services\BettingService.cs" />
+     <Compile Include="Assets\Scripts\Services\BettingWebService.cs" />
      <Compile Include="Assets\Scripts\IrcClient.cs" />
+     <Compile Include="Assets\Scripts\Services\Containers\BetPayout.cs" />
      <Compile Include="Assets\Scripts\Data\SubscriptionTierEnum.cs" />
      <Compile Include="Assets\Scripts\Services\Containers\Bet.cs" />
      <None Include="Assets\Cartoon Textures\README.txt" />
