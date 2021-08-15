@@ -86,7 +86,7 @@ namespace Assets
             StartVsScreen();
 
             //Task.Run(() => StartDatabaseManager());
-            Task.Run(() => StartTwitchBot());
+            //Task.Run(() => StartTwitchBot());
         }
 
         public void Awake()
@@ -209,7 +209,7 @@ namespace Assets
 
         public void StartBattle()
         {
-            SceneManager.LoadScene("TestArena");
+            SceneManager.LoadScene("TestArenaTwo");
 
             Task task = new Task (() => UpdateBalancesOnRoundStart());
             task.Start();
