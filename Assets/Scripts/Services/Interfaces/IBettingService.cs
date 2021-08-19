@@ -14,7 +14,7 @@ namespace Assets.Services.Interfaces
 
         void AddBetToTeam(string viewername, int amount, int team);
 
-        List<Tuple<string, int>> PayoutBets(int winningTeam);
+        void PayoutBets(int winningTeam);
 
         void StartNewRound();
 

@@ -130,7 +130,7 @@ namespace Assets
             channel: "kalloc656"
             );
 
-            tcb.Start();
+            //tcb.Start();
 
         }
 
@@ -258,6 +258,7 @@ namespace Assets
                 TeamOneBlobs.Remove(b);
                 TeamTwoBlobs.Remove(b);
 
+                b.OnDestroy();
                 Destroy(b.gameObject);
             }
 
@@ -291,6 +292,7 @@ namespace Assets
 
             if (TeamOneBlobs.Count == 0 || TeamTwoBlobs.Count == 0)
             {
+                blob.OnDestroy();
                 GameObject.Destroy(blob.gameObject);
                 EndBattle();
                 return;
@@ -311,7 +313,7 @@ namespace Assets
                 }
             }
 
-
+            blob.OnDestroy();
             GameObject.Destroy(blob.gameObject);
         }
         IEnumerator DelayOneFrame()
@@ -410,12 +412,7 @@ namespace Assets
         {
             Debug.Log(team);
 
-            var winners = BettingService.Instance.PayoutBets(team);
-            
-            foreach (var item in winners)
-            {
-                DataService.Instance.UpdateBalance(item.Item1, item.Item2);
-            }
+            BettingService.Instance.PayoutBets(team);
         }
     }
 }
