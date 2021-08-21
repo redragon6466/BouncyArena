@@ -22,10 +22,13 @@ namespace Assets
         [SerializeField]
         private List<Combatant> TeamTwoBlobs;
         [SerializeField]
-        GameObject blueBlobPrefab;
+        GameObject[] blueBlobPrefab;
         [SerializeField]
-        GameObject redBlobPrefab;
+        GameObject[] redBlobPrefab;
 
+
+        int[] _blueBlobSelectedPrefabIndex = new int[3];
+        int[] _redBlobSelectedPrefabIndex = new int[3];
 
         private Text countDown;
         private float _vsTimer = 0.0f;
@@ -165,13 +168,27 @@ namespace Assets
 
             if (!IsBattling)
             {
+                var audio = GetComponent<AudioSource>();
                 _vsTimer -= Time.deltaTime;
                 if (countDown != null)
                 {
                     countDown.text = Math.Floor(_vsTimer).ToString();
                     if (_vsTimer <= 0)
                     {
+                        audio.volume = 0;
                         StartBattle();
+                    }
+                    else if (_vsTimer <= 1)
+                    {
+                        audio.volume = .1f;
+                    }
+                    else if (_vsTimer <= 2)
+                    {
+                        audio.volume = .2f;
+                    }
+                    else if(_vsTimer <= 3)
+                    {
+                        audio.volume = .3f;
                     }
                 }
 
@@ -384,12 +401,13 @@ namespace Assets
 
                 TeamOneBlobs[i].GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 TeamOneBlobs[i].SetTarget(TeamOneBlobs, TeamTwoBlobs, 1);
-                //TeamOneBlobs[i].transform.localScale = new Vector2(_battleScale, _battleScale);
+                TeamOneBlobs[i].transform.localScale = TeamOneBlobs[i].GetComponent<Combatant>().GameScale;
                 //TeamOneBlobs[i].GetComponentInChildren<Canvas>().enabled = true;
 
                 TeamTwoBlobs[i].transform.position = new Vector3((int)_teamTwoPos[i].x, (int)_teamTwoPos[i].y, (int)_teamTwoPos[i].z);
                 TeamTwoBlobs[i].GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 TeamTwoBlobs[i].SetTarget(TeamOneBlobs, TeamTwoBlobs, 2);
+                TeamTwoBlobs[i].transform.localScale = TeamTwoBlobs[i].GetComponent<Combatant>().GameScale;
                 //TeamTwoBlobs[i].transform.localScale = new Vector2(_battleScale, _battleScale);
                 //TeamTwoBlobs[i].GetComponentInChildren<Canvas>().enabled = true;
             }
@@ -408,8 +426,9 @@ namespace Assets
 
             for (int i = 0; i < 3; i++)
             {
+                _blueBlobSelectedPrefabIndex[i] = UnityEngine.Random.Range(0, blueBlobPrefab.Length);
                 /* Create lineup TODO*/
-                var blobT1 = Instantiate(blueBlobPrefab, _blueStartPos[i], Quaternion.identity);
+                var blobT1 = Instantiate(blueBlobPrefab[_blueBlobSelectedPrefabIndex[i]], _blueStartPos[i], Quaternion.identity);
                 blobT1.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
                 //blobT1.GetComponent<SpriteRenderer>().color = Color.blue;
                 //blobT1.GetComponent<Combatant>().SetClass(_teamOneClasses[i], _teamOneBrains[i], this);
@@ -417,10 +436,14 @@ namespace Assets
                 //blobT1.transform.localScale = new Vector2(_vsScale, _vsScale);
                 TeamOneBlobs.Add(blobT1.GetComponent<Combatant>());
                 Combatant blobT1Script = blobT1.GetComponent<Combatant>();
+                blobT1.transform.localScale = blobT1Script.LineupScale;
+                blobT1Script.Team = 1;
                 blobT1Script.ID = i+1;
                 ((Text)stats.ElementAt(i)).text = string.Format(BlobStatsFormat, i + 1, blobT1Script.GetHealth(), blobT1Script.GetAttack(), blobT1Script.GetDefense());
 
-                var blobT2 = Instantiate(redBlobPrefab, _redStartPos[i], Quaternion.identity);
+
+                _redBlobSelectedPrefabIndex[i] = UnityEngine.Random.Range(0, blueBlobPrefab.Length);
+                var blobT2 = Instantiate(redBlobPrefab[_redBlobSelectedPrefabIndex[i]], _redStartPos[i], Quaternion.identity);
                 blobT2.GetComponent<Rigidbody>().constraints =  RigidbodyConstraints.FreezeAll;
                 //blobT2.GetComponent<SpriteRenderer>().color = Color.red;
                 //blobT2.GetComponent<BlobScript>().SetClass(_teamTwoClasses[i], _teamTwoBrains[i], this);
@@ -428,7 +451,9 @@ namespace Assets
                 //blobT2.transform.localScale = new Vector2(_vsScale, _vsScale);
                 TeamTwoBlobs.Add(blobT2.GetComponent<Combatant>());
                 Combatant blobT2Script = blobT2.GetComponent<Combatant>();
+                blobT2.transform.localScale = blobT2Script.LineupScale;
                 blobT2Script.ID = i+1+3;
+                blobT2Script.Team = 2;
                 ((Text)stats.ElementAt(i + 3)).text = string.Format(BlobStatsFormat, i + 3 + 1, blobT2Script.GetHealth(), blobT2Script.GetAttack(), blobT2Script.GetDefense());
                 
 

@@ -14,6 +14,10 @@ public class Combatant : MonoBehaviour
     GameObject ParticleMan;
     [SerializeField]
     public GameObject target;
+    [SerializeField]
+    public Vector3 GameScale;
+    [SerializeField]
+    public Vector3 LineupScale;
 
     [SerializeField]
     Material[] breakingMaterials;
@@ -26,6 +30,7 @@ public class Combatant : MonoBehaviour
     private int hitPoints = 4;
 
     public int ID { get; set; } = -1;
+    public int Team { get; set; } = -1;
 
     /*float initialVelocity = 0.0f;
     float finalVelocity = 50.0f;
@@ -143,6 +148,15 @@ public class Combatant : MonoBehaviour
     public void SpawnParticlesOnHit() 
     {
         GameObject newParticle = Instantiate(ParticleMan, new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z), new Quaternion(0,0,0,0));
+        if (Team == 1)
+        {
+            newParticle.GetComponentInChildren<ParticleSystem>().startColor = Color.blue;
+        }
+        else
+        {
+            newParticle.GetComponentInChildren<ParticleSystem>().startColor = Color.red;
+
+        }
     }
 
     void OnCollisionEnter(Collision collisionInfo)
@@ -153,11 +167,7 @@ public class Combatant : MonoBehaviour
 
         var sumOfNormal = test.normal.x + test.normal.y + test.normal.z;
 
-        var audio = GetComponent<AudioSource>();
-        if (audio != null)
-        {
-            audio.Play();
-        }
+        
 
         if (collisionInfo.gameObject.tag == "Combatant")
         {
@@ -200,6 +210,12 @@ public class Combatant : MonoBehaviour
 
         if (collisionInfo.gameObject.tag == "Arena")
         {
+            var audio = GetComponent<AudioSource>();
+            if (audio != null)
+            {
+                audio.Play();
+            }
+
             var rb = GetComponent<Rigidbody>();
             //0 out the current velocity
             rb.velocity.Set(0, rb.velocity.y, 0);

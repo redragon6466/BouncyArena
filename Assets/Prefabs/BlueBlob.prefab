@@ -131,6 +131,8 @@ MonoBehaviour:
   ParticleMan: {fileID: 907000687434693351, guid: d39183fd273a126499bdc65a34addb09,
     type: 3}
   target: {fileID: 0}
+  GameScale: {x: 4, y: 4, z: 4}
+  LineupScale: {x: 1, y: 1, z: 1}
   breakingMaterials:
   - {fileID: 2100000, guid: e8c27cd993ddf5243ae55cd5b2690f0c, type: 2}
   - {fileID: 2100000, guid: 0f9976ac921831740afb8d06cc5fa1de, type: 2}
@@ -150,9 +152,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c7b9c820050cb3b429a80eac208e1376, type: 3}
-  m_PlayOnAwake: 1
-  m_Volume: 1
+  m_audioClip: {fileID: 8300000, guid: 4a42a2fb0835ee94f9a215de57c9611f, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.6
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -161,9 +163,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 200
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -171,8 +173,8 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 1
+      time: 0.011528015
+      value: 0.9957504
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -180,7 +182,16 @@ AudioSource:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1
+      time: 0.25983128
+      value: 0.45619136
+      inSlope: -1.2096089
+      outSlope: -1.2096089
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.9164276
       value: 0
       inSlope: 0
       outSlope: 0
@@ -196,7 +207,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -254,7 +265,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7846128372713408701
 Transform:
   m_ObjectHideFlags: 0

@@ -114,6 +114,8 @@ MonoBehaviour:
   ParticleMan: {fileID: 907000687434693351, guid: d39183fd273a126499bdc65a34addb09,
     type: 3}
   target: {fileID: 0}
+  GameScale: {x: 4, y: 4, z: 4}
+  LineupScale: {x: 1, y: 1, z: 1}
   breakingMaterials:
   - {fileID: 2100000, guid: bdf84252cdd97ea4aa5612717e0ad34f, type: 2}
   - {fileID: 2100000, guid: f9b2d4e1b0a095e4ca489a6f5887129e, type: 2}
@@ -149,9 +151,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c7b9c820050cb3b429a80eac208e1376, type: 3}
-  m_PlayOnAwake: 1
-  m_Volume: 1
+  m_audioClip: {fileID: 8300000, guid: 4a42a2fb0835ee94f9a215de57c9611f, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.6
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -160,9 +162,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 200
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -174,6 +176,15 @@ AudioSource:
       value: 1
       inSlope: 0
       outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.26809627
+      value: 0.40202934
+      inSlope: -1.0646334
+      outSlope: -1.0646334
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
@@ -195,7 +206,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
