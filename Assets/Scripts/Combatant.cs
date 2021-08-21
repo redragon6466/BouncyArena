@@ -66,6 +66,17 @@ public class Combatant : MonoBehaviour
             return;
         }
 
+        var loc = target.transform;
+
+
+        Vector3 newVector = loc.position - transform.position;
+
+        newVector.Normalize();
+        //Debug.Log(" x: " + newVector.x + " y: " + newVector.y + " z: " + newVector.z);
+
+        //propel the object forward
+        GetComponent<Rigidbody>().AddForce(50f * newVector.x, 00, 50f * newVector.z);
+
         var body = GetComponent<Rigidbody>();
 
         if (body.velocity.magnitude > maxSpeed)
@@ -184,15 +195,20 @@ public class Combatant : MonoBehaviour
 
         if (collisionInfo.gameObject.tag == "Arena")
         {
+            var rb = GetComponent<Rigidbody>();
+            //0 out the current velocity
+            rb.velocity.Set(0, rb.velocity.y, 0);
+            rb.velocity.Set(0, rb.angularVelocity.y, 0);
 
             var loc = target.transform;
 
 
             Vector3 newVector = loc.position - transform.position;
+            newVector.Normalize();
             //Debug.Log(" x: " + newVector.x + " y: " + newVector.y + " z: " + newVector.z);
 
             //propel the object forward
-            GetComponent<Rigidbody>().AddForce(200 * newVector.x, 10, 200 * newVector.z);
+            GetComponent<Rigidbody>().AddForce(1000 * newVector.x, 0, 1000 * newVector.z);
         }
 
         //Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
