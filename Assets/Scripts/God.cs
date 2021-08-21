@@ -41,10 +41,24 @@ namespace Assets
         private IBrain[] _teamTwoBrains = { new HealerBrain(), new GuardianBrain(), new GuardianBrain(), };
         private IClass[] _teamTwoClasses = { new HealerClass(), new GuardianClass(), new GuardianClass(), };*/
 
+        //Selected Positions
+
+        private Vector3[] _teamOnePos;
+        private Vector3[] _teamTwoPos;
+        private Vector3 _selectedCameraPos;
+        private Vector3 _selectedCameraRot;
+
         //ARENA POSITIONS
-        private Vector3[] _testOnePos = { new Vector3(-16, 5, 15) , new Vector3(0, 5, 15), new Vector3(16, 5, 15), };
-        private Vector3[] _testTwoPos = { new Vector3(-16, 5, -10), new Vector3(0, 5, -10), new Vector3(16, 5, -10), };
-        //private Vector2[] _testTwoPos = { new Vector2(10, 3), new Vector2(10, 10), new Vector2(17, 10), };
+        private Vector3[] _testArenaOnePos = { new Vector3(-16, 5, 15) , new Vector3(0, 5, 15), new Vector3(16, 5, 15), };
+        private Vector3[] _testArenaTwoPos = { new Vector3(-16, 5, -10), new Vector3(0, 5, -10), new Vector3(16, 5, -10), };
+        private Vector3 _testCameraPos = new Vector3(-34.9f, 30.2f, 0);
+        private Vector3 _testCameraRot = new Vector3(37.548f, 90f, 0);
+
+        //Shipwreck Island ARENA POSITIONS
+        private Vector3[] _shipwreckIslandOnePos = { new Vector3(-235, 5, 87), new Vector3(-235, 5, 102), new Vector3(-235, 5, 117), };
+        private Vector3[] _shipwreckIslandTwoPos = { new Vector3(-190, 5, 87), new Vector3(-190, 5, 102), new Vector3(-190, 5, 117), };
+        private Vector3 _shipwrechIslandCameraPos = new Vector3(-216, 23, 25);
+        private Vector3 _shipwrechIslandCameraRot = new Vector3(10, 0, 0);
 
         //LINEUP POSITIONS
         private Vector2[] _blueStartPos = { new Vector2(-3.67f, 2.76f), new Vector2(-3.67f, -.1f), new Vector2(-3.67f, -3.5f), };
@@ -78,6 +92,8 @@ namespace Assets
         }
 
         public bool IsBattling { get; private set; } = false;
+        public Vector3 SelectedCameraPos { get => _selectedCameraPos; set => _selectedCameraPos = value; }
+        public Vector3 SelectedCameraRot { get => _selectedCameraRot; set => _selectedCameraRot = value; }
 
         // Start is called before the first frame update
         void Start()
@@ -209,7 +225,8 @@ namespace Assets
 
         public void StartBattle()
         {
-            SceneManager.LoadScene("TestArenaTwo");
+            var scene = ChooseArena();
+            SceneManager.LoadScene(scene);
 
             Task task = new Task (() => UpdateBalancesOnRoundStart());
             task.Start();
@@ -227,10 +244,13 @@ namespace Assets
             //yield on a new YieldInstruction that waits for 5 seconds.
             yield return new WaitForSeconds(time);
 
+           
             //After we have waited 5 seconds print the time again.
             Debug.Log("Finished Coroutine at timestamp : " + Time.time);
             EndBattleTwoEletricbogaloo();
         }
+
+        
 
         public void EndBattle()
         {
@@ -326,21 +346,48 @@ namespace Assets
             StartVsScreen();
         }
 
+        private string ChooseArena()
+        {
+            //var map = UnityEngine.Random.Range(1, 3);
+            var map = 2;
+            switch (map)
+            {
+                case 1:
+                    _teamOnePos = _testArenaOnePos;
+                    _teamTwoPos = _testArenaTwoPos;
+                    SelectedCameraPos = _testCameraPos;
+                    SelectedCameraRot = _testCameraRot;
+                    return "TestArenaTwo";
+                case 2:
+                    _teamOnePos = _shipwreckIslandOnePos;
+                    _teamTwoPos = _shipwreckIslandTwoPos;
+                    SelectedCameraPos = _shipwrechIslandCameraPos;
+                    SelectedCameraRot = _shipwrechIslandCameraRot;
+                    return "PreBuiltPirates";
+                case 3:
+                //272.22, 20, -253.15 a good spot
+                default:
+                    break;
+            }
 
+            return "TestArenaTwo";
+
+        }
 
         private void MoveTeams()
         {
+
             for (int i = 0; i < 3; i++)
             {
                 /* move from lineup to arena, TODO */
-                TeamOneBlobs[i].transform.position = new Vector3(_testOnePos[i].x, (int)_testOnePos[i].y, (int)_testOnePos[i].z);
+                TeamOneBlobs[i].transform.position = new Vector3(_teamOnePos[i].x, (int)_teamOnePos[i].y, (int)_teamOnePos[i].z);
 
                 TeamOneBlobs[i].GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 TeamOneBlobs[i].SetTarget(TeamOneBlobs, TeamTwoBlobs, 1);
                 //TeamOneBlobs[i].transform.localScale = new Vector2(_battleScale, _battleScale);
                 //TeamOneBlobs[i].GetComponentInChildren<Canvas>().enabled = true;
 
-                TeamTwoBlobs[i].transform.position = new Vector3((int)_testTwoPos[i].x, (int)_testTwoPos[i].y, (int)_testTwoPos[i].z);
+                TeamTwoBlobs[i].transform.position = new Vector3((int)_teamTwoPos[i].x, (int)_teamTwoPos[i].y, (int)_teamTwoPos[i].z);
                 TeamTwoBlobs[i].GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 TeamTwoBlobs[i].SetTarget(TeamOneBlobs, TeamTwoBlobs, 2);
                 //TeamTwoBlobs[i].transform.localScale = new Vector2(_battleScale, _battleScale);
@@ -397,7 +444,7 @@ namespace Assets
 
         private void UpdateBalancesOnRoundStart()
         {
-            var bets = BettingService.Instance.GetTeamOneBets();
+           /* var bets = BettingService.Instance.GetTeamOneBets();
             bets.AddRange(BettingService.Instance.GetTeamTwoBets());
             foreach (var item in bets)
             {
@@ -405,7 +452,7 @@ namespace Assets
                 Debug.Log("Balance subtracted for bet: " + item.ViewerName + "," + item.Amount);
                 DataService.Instance.UpdateBalance(item.ViewerName, item.Amount * -1);
                 Debug.Log(DataService.Instance.GetBalance(item.ViewerName));
-            }
+            }*/
         }
 
         private void UpdateBalancesOnRoundEnd(int team)
