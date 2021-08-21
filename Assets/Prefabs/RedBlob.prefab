@@ -111,6 +111,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsMovable: 1
+  ParticleMan: {fileID: 907000687434693351, guid: d39183fd273a126499bdc65a34addb09,
+    type: 3}
   target: {fileID: 0}
   breakingMaterials:
   - {fileID: 2100000, guid: bdf84252cdd97ea4aa5612717e0ad34f, type: 2}
