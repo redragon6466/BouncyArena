@@ -10,7 +10,8 @@ public class Combatant : MonoBehaviour
 {
     [SerializeField]
     bool IsMovable = true;
-
+    [SerializeField]
+    GameObject ParticleMan;
     [SerializeField]
     public GameObject target;
 
@@ -128,10 +129,14 @@ public class Combatant : MonoBehaviour
     {
         target = null;
     }
-
+    public void SpawnParticlesOnHit() 
+    {
+        GameObject newParticle = Instantiate(ParticleMan, new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z), new Quaternion(0,0,0,0));
+    }
 
     void OnCollisionEnter(Collision collisionInfo)
     {
+
 
         var test = collisionInfo.GetContact(0);
 
@@ -164,6 +169,7 @@ public class Combatant : MonoBehaviour
             {
                 //Debug.Log("I " + gameObject.name + ", Have been hit by " + collisionInfo.collider.name + ", with a roll of " + roll);
                 hitCount++;
+                SpawnParticlesOnHit();
                 if (hitCount <= hitPoints && hitCount <= breakingMaterials.Length - 1)
                 {
                     GetComponent<Renderer>().material = breakingMaterials[hitCount];
