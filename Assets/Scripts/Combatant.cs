@@ -153,6 +153,11 @@ public class Combatant : MonoBehaviour
 
         var sumOfNormal = test.normal.x + test.normal.y + test.normal.z;
 
+        var audio = GetComponent<AudioSource>();
+        if (audio != null)
+        {
+            audio.Play();
+        }
 
         if (collisionInfo.gameObject.tag == "Combatant")
         {
