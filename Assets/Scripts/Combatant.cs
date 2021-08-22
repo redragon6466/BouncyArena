@@ -276,16 +276,16 @@ public class Combatant : MonoBehaviour
     {
         GameObject newParticle = Instantiate(ParticleMan, new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z), transform.rotation);
 
-        ParticleSystem.MainModule settings = newParticle.GetComponent<ParticleSystem>().main;
+       /* ParticleSystem.MainModule main = newParticle.GetComponent<ParticleSystem>().main;
         if (Team == 1)
         {
-            settings.startColor = new ParticleSystem.MinMaxGradient(Color.blue);
+            main.startColor = new ParticleSystem.MinMaxGradient(Color.blue);
         }
         else
         {
-            settings.startColor = new ParticleSystem.MinMaxGradient(Color.red);
+            main.startColor = new ParticleSystem.MinMaxGradient(Color.red);
 
-        }
+        }*/
     }
 
     #endregion
