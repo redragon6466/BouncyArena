@@ -239,8 +239,17 @@ namespace Assets
 
         public void StartBattle()
         {
-            var scene = ChooseArena();
-            SceneManager.LoadScene(scene);
+            var sceneName = ChooseArena();
+            var scene = SceneManager.GetSceneByName(sceneName);
+            if (scene == null)
+            {
+                SceneManager.LoadScene(_debugArena.SceneName);
+            }
+            else
+            {
+
+                SceneManager.LoadScene(sceneName);
+            }
 
             Task task = new Task (() => UpdateBalancesOnRoundStart());
             task.Start();
@@ -469,7 +478,7 @@ namespace Assets
 
         private void SetupArenas()
         {
-
+            _arenas = new List<ArenaData>();
             //ARENA POSITIONS
             Vector3[] testArenaOnePos = { new Vector3(-16, 5, 15), new Vector3(0, 5, 15), new Vector3(16, 5, 15), };
             Vector3[] testArenaTwoPos = { new Vector3(-16, 5, -10), new Vector3(0, 5, -10), new Vector3(16, 5, -10), };
