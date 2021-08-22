@@ -221,15 +221,19 @@ public class Combatant : MonoBehaviour
             rb.velocity.Set(0, rb.velocity.y, 0);
             rb.velocity.Set(0, rb.angularVelocity.y, 0);
 
-            var loc = target.transform;
+            if (target != null)
+            {
+                var loc = target.transform;
 
 
-            Vector3 newVector = loc.position - transform.position;
-            newVector.Normalize();
-            //Debug.Log(" x: " + newVector.x + " y: " + newVector.y + " z: " + newVector.z);
+                Vector3 newVector = loc.position - transform.position;
+                newVector.Normalize();
+                //Debug.Log(" x: " + newVector.x + " y: " + newVector.y + " z: " + newVector.z);
 
-            //propel the object forward
-            GetComponent<Rigidbody>().AddForce(1000 * newVector.x, 0, 1000 * newVector.z);
+                //propel the object forward
+                GetComponent<Rigidbody>().AddForce(1000 * newVector.x, 0, 1000 * newVector.z);
+            }
+            
         }
 
         //Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);

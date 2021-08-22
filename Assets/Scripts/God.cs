@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using Assets.Data;
 using Assets.Services;
 using Assets.Scripts.Data;
+using System.Threading;
 
 namespace Assets
 {
@@ -31,6 +32,8 @@ namespace Assets
 
         [SerializeField]
         AudioClip[] BackgroudMusic;
+        [SerializeField]
+        AudioClip LineupMusic;
 
         #endregion
 
@@ -46,6 +49,7 @@ namespace Assets
         private int _count = 0;
         private const float _vsScale = .25f;
         private const float _battleScale = .38f;
+        private bool _fadeOutBegin = false;
 
         //private IBrain[] _teamOneBrains = { new GuardianBrain(), new GuardianBrain(), new HealerBrain(), };
         //private IClass[] _teamOneClasses = { new GuardianClass(), new GuardianClass(), new HealerClass(), };
@@ -56,10 +60,7 @@ namespace Assets
 
         //Selected Positions
 
-        private Vector3[] _teamOnePos;
-        private Vector3[] _teamTwoPos;
-        private Vector3 _selectedCameraPos;
-        private Vector3 _selectedCameraRot;
+        private ArenaData _selectedArena;
 
         private ArenaData _debugArena;
         private List<ArenaData> _arenas;
@@ -100,8 +101,8 @@ namespace Assets
 
         #region Properties
         public bool IsBattling { get; private set; } = false;
-        public Vector3 SelectedCameraPos { get => _selectedCameraPos; set => _selectedCameraPos = value; }
-        public Vector3 SelectedCameraRot { get => _selectedCameraRot; set => _selectedCameraRot = value; }
+        public Vector3 SelectedCameraPos { get => _selectedArena.CameraPos;  }
+        public Vector3 SelectedCameraRot { get => _selectedArena.CameraRot; }
 
         #endregion
 
@@ -138,10 +139,6 @@ namespace Assets
             if (Input.GetKey("escape"))
             {
 
-                if (tcb != null)
-                {
-                    tcb.OnEnd();
-                }
                 Application.Quit();
             }
 
@@ -157,17 +154,10 @@ namespace Assets
                         audio.volume = 0;
                         StartBattle();
                     }
-                    else if (_vsTimer <= 1)
+                    else if (_vsTimer <= 3 && !_fadeOutBegin)
                     {
-                        audio.volume = .1f;
-                    }
-                    else if (_vsTimer <= 2)
-                    {
-                        audio.volume = .2f;
-                    }
-                    else if (_vsTimer <= 3)
-                    {
-                        audio.volume = .3f;
+                        _fadeOutBegin = true;
+                        StartCoroutine(StartFade(3, 0));
                     }
                 }
 
@@ -192,10 +182,7 @@ namespace Assets
 
         public void OnDestroy()
         {
-            if (tcb != null)
-            {
-                tcb.OnEnd();
-            }
+            
         }
         #endregion
 
@@ -203,7 +190,7 @@ namespace Assets
         public void StartVsScreen()
         {
             //Debug.Log("start vs");
-
+            ChooseArena();
             var temp = GameObject.FindWithTag("CountDown");
 
             //Debug.Log(temp != null);
@@ -217,14 +204,20 @@ namespace Assets
 
             CreateLineup();
             StartCountdown();
-            BettingService.Instance.StartNewRound();
+
+            var audio = GetComponent<AudioSource>();
+            audio.clip = LineupMusic;
+            audio.Play();
+            StartCoroutine(StartFade(3, .6f));
+
+
+            //BettingService.Instance.StartNewRound();
             IsBattling = false;
         }
 
         public void StartBattle()
         {
-            var sceneName = ChooseArena();
-            var scene = SceneManager.GetSceneByName(sceneName);
+            var scene = SceneManager.GetSceneByName(_selectedArena.SceneName);
             if (scene == null)
             {
                 SceneManager.LoadScene(_debugArena.SceneName);
@@ -232,11 +225,17 @@ namespace Assets
             else
             {
 
-                SceneManager.LoadScene(sceneName);
+                SceneManager.LoadScene(_selectedArena.SceneName);
             }
 
-            Task task = new Task(() => UpdateBalancesOnRoundStart());
-            task.Start();
+            //Task task = new Task(() => UpdateBalancesOnRoundStart());
+            //task.Start();
+
+            var audio = GetComponent<AudioSource>();
+            audio.clip = _selectedArena.BackgroundMusic;
+            audio.Play();
+            StartCoroutine(StartFade(3, .6f));
+
             MoveTeams();
             IsBattling = true;
 
@@ -250,9 +249,12 @@ namespace Assets
         public void EndBattle()
         {
             IsBattling = false;
+            _fadeOutBegin = false;
             _vsTimer = 0;
 
             //TODO kickoff music fade here
+            var audio = GetComponent<AudioSource>();
+            StartCoroutine(StartFade(3, 0));
 
             //add delay????
             StartCoroutine(DelayBytTimeCoroutine(3));
@@ -287,7 +289,6 @@ namespace Assets
             task.Start();
 
             SceneManager.LoadScene("Lineup");
-
             StartCoroutine(DelayOneFrame());
         }
 
@@ -340,10 +341,7 @@ namespace Assets
         {
             var map = UnityEngine.Random.Range(0, _arenas.Count);
             var arena = _arenas[map];
-            _teamOnePos = arena.TeamOnePos;
-            _teamTwoPos = arena.TeamTwoPos;
-            SelectedCameraPos = arena.CameraPos;
-            SelectedCameraRot = arena.CameraRot;
+            _selectedArena = arena;
             return arena.SceneName;
         }
 
@@ -353,14 +351,14 @@ namespace Assets
             for (int i = 0; i < 3; i++)
             {
                 /* move from lineup to arena, TODO */
-                TeamOneBlobs[i].transform.position = new Vector3(_teamOnePos[i].x, (int)_teamOnePos[i].y, (int)_teamOnePos[i].z);
+                TeamOneBlobs[i].transform.position = new Vector3((int)_selectedArena.TeamOnePos[i].x, (int)_selectedArena.TeamOnePos[i].y, (int)_selectedArena.TeamOnePos[i].z);
 
                 TeamOneBlobs[i].GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 TeamOneBlobs[i].SetTarget(TeamOneBlobs, TeamTwoBlobs, 1);
                 TeamOneBlobs[i].transform.localScale = TeamOneBlobs[i].GetComponent<Combatant>().GameScale;
                 //TeamOneBlobs[i].GetComponentInChildren<Canvas>().enabled = true;
 
-                TeamTwoBlobs[i].transform.position = new Vector3((int)_teamTwoPos[i].x, (int)_teamTwoPos[i].y, (int)_teamTwoPos[i].z);
+                TeamTwoBlobs[i].transform.position = new Vector3((int)_selectedArena.TeamTwoPos[i].x, (int)_selectedArena.TeamTwoPos[i].y, (int)_selectedArena.TeamTwoPos[i].z);
                 TeamTwoBlobs[i].GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 TeamTwoBlobs[i].SetTarget(TeamOneBlobs, TeamTwoBlobs, 2);
                 TeamTwoBlobs[i].transform.localScale = TeamTwoBlobs[i].GetComponent<Combatant>().GameScale;
@@ -492,6 +490,24 @@ namespace Assets
             //code goes here
             StartVsScreen();
         }
+
+
+        public IEnumerator StartFade( float duration, float targetVolume)
+        {
+            var audio = GetComponent<AudioSource>();
+            float currentTime = 0;
+            float start = audio.volume;
+
+            while (currentTime < duration)
+            {
+                currentTime += Time.deltaTime;
+                audio.volume = Mathf.Lerp(start, targetVolume, currentTime / duration);
+                yield return null;
+            }
+            yield break;
+        }
+
+
         #endregion
     }
 }

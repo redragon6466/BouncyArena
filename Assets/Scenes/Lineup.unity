@@ -1302,6 +1302,7 @@ MonoBehaviour:
   - {fileID: 4454833567758310104, guid: 690af4b15bc0da245b8731c87ae0f6a3, type: 3}
   BackgroudMusic:
   - {fileID: 8300000, guid: d5b5b496b9a12ad409f39d009ba7ae62, type: 3}
+  LineupMusic: {fileID: 8300000, guid: 9a8dc34e9cc29ce4a975f16434c3fc1b, type: 3}
 --- !u!82 &1867500861
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1316,7 +1317,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
