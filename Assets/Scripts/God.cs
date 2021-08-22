@@ -18,6 +18,8 @@ namespace Assets
     {
         const string BlobStatsFormat = "Blob {0}\nHp: {1}\nAttack: {2}\nDefense: {3}";
 
+        #region Serialized Fields
+
         [SerializeField]
         private List<Combatant> TeamOneBlobs;
         [SerializeField]
@@ -29,6 +31,10 @@ namespace Assets
 
         [SerializeField]
         AudioClip[] BackgroudMusic;
+
+        #endregion
+
+        #region Private Variables
 
 
         int[] _blueBlobSelectedPrefabIndex = new int[3];
@@ -62,14 +68,14 @@ namespace Assets
         Vector2[] _blueStartPos = { new Vector2(-3.67f, 2.76f), new Vector2(-3.67f, -.1f), new Vector2(-3.67f, -3.5f), };
         Vector2[] _redStartPos = { new Vector2(3.55f, 2.91f), new Vector2(3.55f, -.1f), new Vector2(3.55f, -3.5f), };
 
-
-        private TwitchChatBot tcb;
-
+        #endregion
 
         public God()
         {
             //instance = this;
         }
+
+        #region Instance
 
         private static God instance = null;
         private static readonly object padlock = new object();
@@ -90,9 +96,16 @@ namespace Assets
             }
         }
 
+        #endregion
+
+        #region Properties
         public bool IsBattling { get; private set; } = false;
         public Vector3 SelectedCameraPos { get => _selectedCameraPos; set => _selectedCameraPos = value; }
         public Vector3 SelectedCameraRot { get => _selectedCameraRot; set => _selectedCameraRot = value; }
+
+        #endregion
+
+        #region Unity Methods
 
         // Start is called before the first frame update
         void Start()
@@ -117,37 +130,6 @@ namespace Assets
             {
                 DontDestroyOnLoad(gameObject); //when the scene changes don't destroy the game object that owns this
             }
-        }
-
-        private void StartDatabaseManager()
-        {
-           
-            if (!DataService.Instance.CheckDatabase())
-            {
-                if (!DataService.Instance.CreateDatabase())
-                {
-                    Debug.Log("Failed to create database ");
-                    return;
-                }
-            }
-
-            //DataService.Instance.UpdateBalance("kalloc656", 500);
-            Debug.Log(DataService.Instance.GetBalance("kalloc656"));
-
-        }
-
-        private void StartTwitchBot()
-        {
-
-            tcb = new TwitchChatBot(
-            server: "irc.chat.twitch.tv",
-            port: 6667,
-            nick: "BlobArenaCoordinator",
-            channel: "kalloc656"
-            );
-
-            //tcb.Start();
-
         }
 
         // Update is called once per frame
@@ -183,7 +165,7 @@ namespace Assets
                     {
                         audio.volume = .2f;
                     }
-                    else if(_vsTimer <= 3)
+                    else if (_vsTimer <= 3)
                     {
                         audio.volume = .3f;
                     }
@@ -215,7 +197,9 @@ namespace Assets
                 tcb.OnEnd();
             }
         }
+        #endregion
 
+        #region Public Methods
         public void StartVsScreen()
         {
             //Debug.Log("start vs");
@@ -251,37 +235,27 @@ namespace Assets
                 SceneManager.LoadScene(sceneName);
             }
 
-            Task task = new Task (() => UpdateBalancesOnRoundStart());
+            Task task = new Task(() => UpdateBalancesOnRoundStart());
             task.Start();
             MoveTeams();
             IsBattling = true;
 
-            
+
         }
 
-        IEnumerator ExampleCoroutine(float time)
-        {
-            //Print the time of when the function is first called.
-            Debug.Log("Started Coroutine at timestamp : " + Time.time);
 
-            //yield on a new YieldInstruction that waits for 5 seconds.
-            yield return new WaitForSeconds(time);
 
-           
-            //After we have waited 5 seconds print the time again.
-            Debug.Log("Finished Coroutine at timestamp : " + Time.time);
-            EndBattleTwoEletricbogaloo();
-        }
 
-        
 
         public void EndBattle()
         {
             IsBattling = false;
             _vsTimer = 0;
 
+            //TODO kickoff music fade here
+
             //add delay????
-            StartCoroutine(ExampleCoroutine(3));
+            StartCoroutine(DelayBytTimeCoroutine(3));
 
         }
 
@@ -359,16 +333,9 @@ namespace Assets
             blob.OnDestroy();
             GameObject.Destroy(blob.gameObject);
         }
-        IEnumerator DelayOneFrame()
-        {
+        #endregion
 
-            //returning 0 will make it wait 1 frame
-            yield return 0;
-
-            //code goes here
-            StartVsScreen();
-        }
-
+        #region Private Methods
         private string ChooseArena()
         {
             var map = UnityEngine.Random.Range(0, _arenas.Count);
@@ -427,13 +394,13 @@ namespace Assets
                 Combatant blobT1Script = blobT1.GetComponent<Combatant>();
                 blobT1.transform.localScale = blobT1Script.LineupScale;
                 blobT1Script.Team = 1;
-                blobT1Script.ID = i+1;
+                blobT1Script.ID = i + 1;
                 ((Text)stats.ElementAt(i)).text = string.Format(BlobStatsFormat, i + 1, blobT1Script.GetHealth(), blobT1Script.GetAttack(), blobT1Script.GetDefense());
 
 
                 _redBlobSelectedPrefabIndex[i] = UnityEngine.Random.Range(0, blueBlobPrefab.Length);
                 var blobT2 = Instantiate(redBlobPrefab[_redBlobSelectedPrefabIndex[i]], _redStartPos[i], Quaternion.identity);
-                blobT2.GetComponent<Rigidbody>().constraints =  RigidbodyConstraints.FreezeAll;
+                blobT2.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
                 //blobT2.GetComponent<SpriteRenderer>().color = Color.red;
                 //blobT2.GetComponent<BlobScript>().SetClass(_teamTwoClasses[i], _teamTwoBrains[i], this);
                 //blobT2.GetComponentInChildren<Canvas>().enabled = false;
@@ -441,10 +408,10 @@ namespace Assets
                 TeamTwoBlobs.Add(blobT2.GetComponent<Combatant>());
                 Combatant blobT2Script = blobT2.GetComponent<Combatant>();
                 blobT2.transform.localScale = blobT2Script.LineupScale;
-                blobT2Script.ID = i+1+3;
+                blobT2Script.ID = i + 1 + 3;
                 blobT2Script.Team = 2;
                 ((Text)stats.ElementAt(i + 3)).text = string.Format(BlobStatsFormat, i + 3 + 1, blobT2Script.GetHealth(), blobT2Script.GetAttack(), blobT2Script.GetDefense());
-                
+
 
             }
         }
@@ -458,15 +425,15 @@ namespace Assets
 
         private void UpdateBalancesOnRoundStart()
         {
-           /* var bets = BettingService.Instance.GetTeamOneBets();
-            bets.AddRange(BettingService.Instance.GetTeamTwoBets());
-            foreach (var item in bets)
-            {
-                Debug.Log(DataService.Instance.GetBalance(item.ViewerName));
-                Debug.Log("Balance subtracted for bet: " + item.ViewerName + "," + item.Amount);
-                DataService.Instance.UpdateBalance(item.ViewerName, item.Amount * -1);
-                Debug.Log(DataService.Instance.GetBalance(item.ViewerName));
-            }*/
+            /* var bets = BettingService.Instance.GetTeamOneBets();
+             bets.AddRange(BettingService.Instance.GetTeamTwoBets());
+             foreach (var item in bets)
+             {
+                 Debug.Log(DataService.Instance.GetBalance(item.ViewerName));
+                 Debug.Log("Balance subtracted for bet: " + item.ViewerName + "," + item.Amount);
+                 DataService.Instance.UpdateBalance(item.ViewerName, item.Amount * -1);
+                 Debug.Log(DataService.Instance.GetBalance(item.ViewerName));
+             }*/
         }
 
         private void UpdateBalancesOnRoundEnd(int team)
@@ -495,10 +462,37 @@ namespace Assets
             Vector3 shipwrechIslandCameraRot = new Vector3(10, 0, 0);
 
 
-            _arenas.Add( new ArenaData("PreBuiltPirates", shipwreckIslandOnePos, shipwreckIslandTwoPos, shipwrechIslandCameraPos, shipwrechIslandCameraRot, BackgroudMusic[0], "Shipwreck Island"));
+            _arenas.Add(new ArenaData("PreBuiltPirates", shipwreckIslandOnePos, shipwreckIslandTwoPos, shipwrechIslandCameraPos, shipwrechIslandCameraRot, BackgroudMusic[0], "Shipwreck Island"));
 
 
         }
+        #endregion
+
+        #region Coroutines
+        IEnumerator DelayBytTimeCoroutine(float time)
+        {
+            //Print the time of when the function is first called.
+            Debug.Log("Started Coroutine at timestamp : " + Time.time);
+
+            //yield on a new YieldInstruction that waits for 5 seconds.
+            yield return new WaitForSeconds(time);
+
+
+            //After we have waited 5 seconds print the time again.
+            Debug.Log("Finished Coroutine at timestamp : " + Time.time);
+            EndBattleTwoEletricbogaloo();
+        }
+
+        IEnumerator DelayOneFrame()
+        {
+
+            //returning 0 will make it wait 1 frame
+            yield return 0;
+
+            //code goes here
+            StartVsScreen();
+        }
+        #endregion
     }
 }
 
