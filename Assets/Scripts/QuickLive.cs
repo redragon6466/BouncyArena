@@ -16,10 +16,10 @@ public class QuickLive : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeAlive = +Time.deltaTime;
+        timeAlive += Time.deltaTime;
         if(timeAlive>timeToLive)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
     }
 }
