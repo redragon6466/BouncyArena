@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5185099737215963877}
   - component: {fileID: -9049663950555353173}
   - component: {fileID: 2975113217751652835}
+  - component: {fileID: 8136483647211892213}
   m_Layer: 0
   m_Name: BlueHexagonalGem
   m_TagString: Combatant
@@ -114,15 +115,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsMovable: 1
-  ParticleMan: {fileID: 907000687434693351, guid: d39183fd273a126499bdc65a34addb09,
+  ParticleMan: {fileID: 4941511593991716162, guid: d134914364c693f42bf71be5d883df81,
     type: 3}
-  target: {fileID: 0}
   GameScale: {x: 40, y: 40, z: 40}
   LineupScale: {x: 10, y: 10, z: 10}
+  ClassScriptField: {fileID: 8136483647211892213}
   breakingMaterials: []
-  attack: 2
-  defense: 13
-  hitPoints: 4
+  hitCount: 0
 --- !u!82 &-9049663950555353173
 AudioSource:
   m_ObjectHideFlags: 0
@@ -232,3 +231,16 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.06
   m_Center: {x: 0, y: 0.03316331, z: 0}
+--- !u!114 &8136483647211892213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8499293999315183999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9881888b67fc7e48b0f65b44eac6fb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}

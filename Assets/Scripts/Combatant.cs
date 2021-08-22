@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Class_Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,29 +9,45 @@ using UnityEngine;
 
 public class Combatant : MonoBehaviour
 {
+    #region SerializedFields
     [SerializeField]
     bool IsMovable = true;
     [SerializeField]
     GameObject ParticleMan;
     [SerializeField]
-    public GameObject target;
-    [SerializeField]
     public Vector3 GameScale;
     [SerializeField]
     public Vector3 LineupScale;
+    [SerializeField]
+    public BaseClass ClassScriptField;
 
     [SerializeField]
     Material[] breakingMaterials;
 
-    [SerializeField]
-    private int attack = 2;
-    [SerializeField]
-    private int defense = 13;
-    [SerializeField]
-    private int hitPoints = 4;
+    private Rigidbody _body;
+    
 
+    #endregion
+
+    #region properties
     public int ID { get; set; } = -1;
+
+   
     public int Team { get; set; } = -1;
+
+    public BaseClass ClassScript
+    { 
+        get
+        {
+            if (ClassScriptField == null)
+            {
+                ClassScriptField = new BaseClass();
+            }
+            return ClassScriptField;
+        }
+    }
+
+    #endregion
 
     /*float initialVelocity = 0.0f;
     float finalVelocity = 50.0f;
@@ -40,17 +57,17 @@ public class Combatant : MonoBehaviour
     float power = 0;
     */
 
+    [SerializeField]
     int hitCount = 0;
-    int maxSpeed = 50;
-    private List<int> activeAttackModifiers;
-    private List<int> activeDefenseModifiers;
 
+    int maxSpeed = 500;
 
+    #region Unity Methods
     // Start is called before the first frame update
     void Start()
     {
-        activeAttackModifiers = new List<int>();
-        activeDefenseModifiers = new List<int>();
+        //safety strats use default behavior if nothing is assigned
+        
     }
 
     // Update is called once per frame
@@ -61,7 +78,7 @@ public class Combatant : MonoBehaviour
             return;
         }
 
-        if (target == null)
+        if (ClassScript.target == null)
         {
             return;
         }
@@ -71,7 +88,7 @@ public class Combatant : MonoBehaviour
             return;
         }
 
-        var loc = target.transform;
+        var loc = ClassScript.target.transform;
 
 
         Vector3 newVector = loc.position - transform.position;
@@ -80,13 +97,17 @@ public class Combatant : MonoBehaviour
         //Debug.Log(" x: " + newVector.x + " y: " + newVector.y + " z: " + newVector.z);
 
         //propel the object forward
-        GetComponent<Rigidbody>().AddForce(50f * newVector.x, 00, 50f * newVector.z);
-
-        var body = GetComponent<Rigidbody>();
-
-        if (body.velocity.magnitude > maxSpeed)
+        if (_body == null)
         {
-            body.velocity = Vector3.ClampMagnitude(body.velocity, maxSpeed);
+            _body = GetComponent<Rigidbody>();
+        }
+        _body.AddForce(5000f * Time.deltaTime * newVector.x, 500f * Time.deltaTime * newVector.y, 5000f * Time.deltaTime * newVector.z);
+
+        
+
+        if (_body.velocity.magnitude > maxSpeed)
+        {
+            //_body.velocity = Vector3.ClampMagnitude(_body.velocity, maxSpeed);
         }
 
        
@@ -95,68 +116,12 @@ public class Combatant : MonoBehaviour
 
     public void Awake()
     {
-        
             DontDestroyOnLoad(gameObject); //when the scene changes don't destroy the game object that owns this
-    }
-
-    public void SetTarget(List<Combatant> TeamOneBlobs, List<Combatant> TeamTwoBlobs, int team)
-    {
-        //Eventually hand this off to class
-        if (team == 1)
-        {
-            target = TeamTwoBlobs[Random.Range(0, TeamTwoBlobs.Count-1)].gameObject;
-        }
-        else
-        {
-            target = TeamOneBlobs[Random.Range(0, TeamOneBlobs.Count - 1)].gameObject;
-        }
-
-    }
-
-    public int GetAttack()
-    {
-        return attack;
-    }
-
-    public int GetDefense()
-    {
-        return defense;
-    }
-
-    public int GetHealth()
-    {
-        return hitPoints;
-    }
-
-    public int RollToAttack()
-    {
-        var totalMod = attack;
-        foreach (var mod in activeAttackModifiers)
-        {
-            totalMod += mod;
-        }
-
-        var roll = Random.Range(1, 20);
-
-        return roll + totalMod;
     }
 
     public void OnDestroy()
     {
-        target = null;
-    }
-    public void SpawnParticlesOnHit() 
-    {
-        GameObject newParticle = Instantiate(ParticleMan, new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z), new Quaternion(0,0,0,0));
-        if (Team == 1)
-        {
-            newParticle.GetComponentInChildren<ParticleSystem>().startColor = Color.blue;
-        }
-        else
-        {
-            newParticle.GetComponentInChildren<ParticleSystem>().startColor = Color.red;
-
-        }
+        ClassScript.target = null;
     }
 
     void OnCollisionEnter(Collision collisionInfo)
@@ -167,45 +132,61 @@ public class Combatant : MonoBehaviour
 
         var sumOfNormal = test.normal.x + test.normal.y + test.normal.z;
 
-        
+
 
         if (collisionInfo.gameObject.tag == "Combatant")
         {
-            if (gameObject.name.Contains("Red") && collisionInfo.collider.name.Contains("Red"))
-            {
-                return;
-            }
-            if (gameObject.name.Contains("Blue") && collisionInfo.collider.name.Contains("Blue"))
+            if (!ClassScript.IsValidTarget(collisionInfo.collider.name))
             {
                 return;
             }
 
+
+            var target = collisionInfo.gameObject.GetComponent<Combatant>();
+           
 
             // Roll Attack
-            var roll = collisionInfo.gameObject.GetComponent<Combatant>().RollToAttack();
+            var roll = target.RollToAttack();
 
-            var totalDefense = defense;
-            foreach (var item in activeAttackModifiers)
+            if (roll > ClassScript.GetTotalDefense())
             {
-                totalDefense += item;
-            }
-                                            
 
-            if (roll > totalDefense)
-            {
+                SpawnParticlesOnHit();
+                var skip = ClassScript.SpecialAttackBehavior(target);
+                if (skip)
+                {
+                    return;
+                }
                 //Debug.Log("I " + gameObject.name + ", Have been hit by " + collisionInfo.collider.name + ", with a roll of " + roll);
                 hitCount++;
-                SpawnParticlesOnHit();
-                if (hitCount <= hitPoints && hitCount <= breakingMaterials.Length - 1)
+                if (hitCount <= ClassScript.GetHealth() && hitCount <= breakingMaterials.Length - 1)
                 {
                     GetComponent<Renderer>().material = breakingMaterials[hitCount];
                 }
-                if (hitCount > hitPoints)
+                if (hitCount > ClassScript.GetHealth())
                 {
                     God.Instance.KillBlob(this);
+                    return;
                 }
             }
-            
+
+            if (_body == null)
+            {
+                _body = GetComponent<Rigidbody>();
+            }
+
+            _body.velocity = Vector3.zero;
+            _body.angularVelocity = Vector3.zero;
+            var loc = collisionInfo.GetContact(0);
+
+            Vector3 newVector = loc.point - transform.position;
+
+            newVector.Normalize();
+            //Debug.Log(" x: " + newVector.x + " y: " + newVector.y + " z: " + newVector.z);
+
+            //propel the object backward on a hit}
+            _body.AddForce(-20000f * newVector.x, 500f , -20000f * newVector.z);
+
         }
 
         if (collisionInfo.gameObject.tag == "Arena")
@@ -221,9 +202,9 @@ public class Combatant : MonoBehaviour
             rb.velocity.Set(0, rb.velocity.y, 0);
             rb.velocity.Set(0, rb.angularVelocity.y, 0);
 
-            if (target != null)
+            if (ClassScript.target != null)
             {
-                var loc = target.transform;
+                var loc = ClassScript.target.transform;
 
 
                 Vector3 newVector = loc.position - transform.position;
@@ -231,13 +212,83 @@ public class Combatant : MonoBehaviour
                 //Debug.Log(" x: " + newVector.x + " y: " + newVector.y + " z: " + newVector.z);
 
                 //propel the object forward
-                GetComponent<Rigidbody>().AddForce(1000 * newVector.x, 0, 1000 * newVector.z);
+                GetComponent<Rigidbody>().AddForce(5000 * newVector.x, 500, 5000 * newVector.z);
             }
-            
+
         }
 
         //Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
         //Debug.Log("There are " + collisionInfo.contacts.Length + " point(s) of contacts");
         //Debug.Log("The contact normal is " + test.normal.);
     }
+
+    #endregion
+
+    #region Public Methods
+    public void SetTarget(List<Combatant> TeamOneBlobs, List<Combatant> TeamTwoBlobs, int team)
+    {
+        //Eventually hand this off to class
+        ClassScript.SetTarget(TeamOneBlobs, TeamTwoBlobs, team);
+
+    }
+
+    /// <summary>
+    /// Special Method to heal combatants, added for healer class
+    /// </summary>
+    /// <param name="countToAdd"></param>
+    public void RemoveHit(int countToAdd)
+    {
+        hitCount -= countToAdd;
+        if (hitCount < 0)
+        {
+            hitCount = 0;
+        }
+        if (hitCount <= breakingMaterials.Length - 1)
+        {
+            
+            GetComponent<Renderer>().material = breakingMaterials[hitCount];
+        }
+
+    }
+
+    public int GetAttack()
+    {
+        return ClassScript.GetAttack();
+    }
+
+    public int GetDefense()
+    {
+        return ClassScript.GetDefense();
+    }
+
+    public int GetHealth()
+    {
+        return ClassScript.GetHealth();
+    }
+
+    public int RollToAttack()
+    {
+        return ClassScript.RollToAttack();
+    }
+
+    
+    public void SpawnParticlesOnHit() 
+    {
+        GameObject newParticle = Instantiate(ParticleMan, new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z), transform.rotation);
+
+        ParticleSystem.MainModule settings = newParticle.GetComponent<ParticleSystem>().main;
+        if (Team == 1)
+        {
+            settings.startColor = new ParticleSystem.MinMaxGradient(Color.blue);
+        }
+        else
+        {
+            settings.startColor = new ParticleSystem.MinMaxGradient(Color.red);
+
+        }
+    }
+
+    #endregion
+
+    
 }

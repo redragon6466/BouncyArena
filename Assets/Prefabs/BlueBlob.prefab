@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 380277248491167246}
   - component: {fileID: 380277248491167241}
   - component: {fileID: 6473693075260138691}
+  - component: {fileID: 8514177875815913457}
   m_Layer: 0
   m_Name: BlueBlob
   m_TagString: Combatant
@@ -130,18 +131,15 @@ MonoBehaviour:
   IsMovable: 1
   ParticleMan: {fileID: 907000687434693351, guid: d39183fd273a126499bdc65a34addb09,
     type: 3}
-  target: {fileID: 0}
   GameScale: {x: 4, y: 4, z: 4}
   LineupScale: {x: 1, y: 1, z: 1}
+  ClassScriptField: {fileID: 8514177875815913457}
   breakingMaterials:
   - {fileID: 2100000, guid: e8c27cd993ddf5243ae55cd5b2690f0c, type: 2}
   - {fileID: 2100000, guid: 0f9976ac921831740afb8d06cc5fa1de, type: 2}
   - {fileID: 2100000, guid: 92826d007d414dc41982cfe4f59ab3c8, type: 2}
   - {fileID: 2100000, guid: e9dc0f2cb68070e45a3bad888353f75b, type: 2}
   - {fileID: 2100000, guid: e653e21a45d85fb46a6e57ec6c2219b5, type: 2}
-  attack: 2
-  defense: 13
-  hitPoints: 4
 --- !u!82 &6473693075260138691
 AudioSource:
   m_ObjectHideFlags: 0
@@ -247,6 +245,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8514177875815913457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380277248491167247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0eb5d0b7d513b348a0b208312ebaeb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
 --- !u!1 &7387780763982531771
 GameObject:
   m_ObjectHideFlags: 0

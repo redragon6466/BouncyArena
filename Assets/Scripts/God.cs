@@ -303,6 +303,27 @@ namespace Assets
             return blobs;
         }
 
+        /// <summary>
+        /// Gets team one
+        /// </summary>
+        /// <returns>a list of all blobs</returns>
+        public List<Combatant> GetTeamOne()
+        {
+            var blobs = new List<Combatant>(TeamOneBlobs);
+            return blobs;
+        }
+
+        /// <summary>
+        /// Gets team one
+        /// </summary>
+        /// <returns>a list of all blobs</returns>
+        public List<Combatant> GetTeamTwo()
+        {
+            var blobs = new List<Combatant>(TeamTwoBlobs);
+            return blobs;
+        }
+
+
         public void KillBlob(Combatant blob)
         {
             TeamOneBlobs.Remove(blob);
@@ -318,14 +339,14 @@ namespace Assets
 
             foreach (var blobItem in TeamOneBlobs)
             {
-                if (blobItem.target.GetComponent<Combatant>().ID == blob.ID)
+                if (blobItem.ClassScript.target.GetComponent<Combatant>().ID == blob.ID)
                 {
                     blobItem.SetTarget(TeamOneBlobs, TeamTwoBlobs, 1);
                 }
             }
             foreach (var blobItem in TeamTwoBlobs)
             {
-                if (blobItem.target.GetComponent<Combatant>().ID == blob.ID)
+                if (blobItem.ClassScript.target.GetComponent<Combatant>().ID == blob.ID)
                 {
                     blobItem.SetTarget(TeamOneBlobs, TeamTwoBlobs, 2);
                 }
@@ -343,6 +364,50 @@ namespace Assets
             var arena = _arenas[map];
             _selectedArena = arena;
             return arena.SceneName;
+        }
+
+        private void CreateLineup()
+        {
+            TeamOneBlobs = new List<Combatant>();
+            TeamOneBlobs.Clear();
+            TeamTwoBlobs = new List<Combatant>();
+            TeamTwoBlobs.Clear();
+
+            var texts = FindObjectsOfType(typeof(Text)).ToList().OrderBy(x => ((Text)x).text);
+            var stats = texts.ToList();
+            stats.RemoveAt(0);
+
+            for (int i = 0; i < 3; i++)
+            {
+                _blueBlobSelectedPrefabIndex[i] = UnityEngine.Random.Range(0, blueBlobPrefab.Length);
+
+                //_blueBlobSelectedPrefabIndex[i] = 0;
+
+
+                /* Create lineup TODO*/
+                var blobT1 = Instantiate(blueBlobPrefab[_blueBlobSelectedPrefabIndex[i]], _blueStartPos[i], Quaternion.identity);
+                blobT1.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+                TeamOneBlobs.Add(blobT1.GetComponent<Combatant>());
+                Combatant blobT1Script = blobT1.GetComponent<Combatant>();
+                blobT1.transform.localScale = blobT1Script.LineupScale;
+                blobT1Script.Team = 1;
+                blobT1Script.ID = i + 1;
+                ((Text)stats.ElementAt(i)).text = string.Format(BlobStatsFormat, i + 1, blobT1Script.GetHealth(), blobT1Script.GetAttack(), blobT1Script.GetDefense());
+
+
+                _redBlobSelectedPrefabIndex[i] = UnityEngine.Random.Range(0, blueBlobPrefab.Length);
+                //_redBlobSelectedPrefabIndex[i] = 0;
+                var blobT2 = Instantiate(redBlobPrefab[_redBlobSelectedPrefabIndex[i]], _redStartPos[i], Quaternion.identity);
+                blobT2.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+                TeamTwoBlobs.Add(blobT2.GetComponent<Combatant>());
+                Combatant blobT2Script = blobT2.GetComponent<Combatant>();
+                blobT2.transform.localScale = blobT2Script.LineupScale;
+                blobT2Script.ID = i + 1 + 3;
+                blobT2Script.Team = 2;
+                ((Text)stats.ElementAt(i + 3)).text = string.Format(BlobStatsFormat, i + 3 + 1, blobT2Script.GetHealth(), blobT2Script.GetAttack(), blobT2Script.GetDefense());
+
+
+            }
         }
 
         private void MoveTeams()
@@ -367,52 +432,7 @@ namespace Assets
             }
         }
 
-        private void CreateLineup()
-        {
-            TeamOneBlobs = new List<Combatant>();
-            TeamOneBlobs.Clear();
-            TeamTwoBlobs = new List<Combatant>();
-            TeamTwoBlobs.Clear();
-
-            var texts = FindObjectsOfType(typeof(Text)).ToList().OrderBy(x => ((Text)x).text);
-            var stats = texts.ToList();
-            stats.RemoveAt(0);
-
-            for (int i = 0; i < 3; i++)
-            {
-                _blueBlobSelectedPrefabIndex[i] = UnityEngine.Random.Range(0, blueBlobPrefab.Length);
-                /* Create lineup TODO*/
-                var blobT1 = Instantiate(blueBlobPrefab[_blueBlobSelectedPrefabIndex[i]], _blueStartPos[i], Quaternion.identity);
-                blobT1.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-                //blobT1.GetComponent<SpriteRenderer>().color = Color.blue;
-                //blobT1.GetComponent<Combatant>().SetClass(_teamOneClasses[i], _teamOneBrains[i], this);
-                //blobT1.GetComponentInChildren<Canvas>().enabled = false;
-                //blobT1.transform.localScale = new Vector2(_vsScale, _vsScale);
-                TeamOneBlobs.Add(blobT1.GetComponent<Combatant>());
-                Combatant blobT1Script = blobT1.GetComponent<Combatant>();
-                blobT1.transform.localScale = blobT1Script.LineupScale;
-                blobT1Script.Team = 1;
-                blobT1Script.ID = i + 1;
-                ((Text)stats.ElementAt(i)).text = string.Format(BlobStatsFormat, i + 1, blobT1Script.GetHealth(), blobT1Script.GetAttack(), blobT1Script.GetDefense());
-
-
-                _redBlobSelectedPrefabIndex[i] = UnityEngine.Random.Range(0, blueBlobPrefab.Length);
-                var blobT2 = Instantiate(redBlobPrefab[_redBlobSelectedPrefabIndex[i]], _redStartPos[i], Quaternion.identity);
-                blobT2.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-                //blobT2.GetComponent<SpriteRenderer>().color = Color.red;
-                //blobT2.GetComponent<BlobScript>().SetClass(_teamTwoClasses[i], _teamTwoBrains[i], this);
-                //blobT2.GetComponentInChildren<Canvas>().enabled = false;
-                //blobT2.transform.localScale = new Vector2(_vsScale, _vsScale);
-                TeamTwoBlobs.Add(blobT2.GetComponent<Combatant>());
-                Combatant blobT2Script = blobT2.GetComponent<Combatant>();
-                blobT2.transform.localScale = blobT2Script.LineupScale;
-                blobT2Script.ID = i + 1 + 3;
-                blobT2Script.Team = 2;
-                ((Text)stats.ElementAt(i + 3)).text = string.Format(BlobStatsFormat, i + 3 + 1, blobT2Script.GetHealth(), blobT2Script.GetAttack(), blobT2Script.GetDefense());
-
-
-            }
-        }
+       
 
         private void StartCountdown()
         {
