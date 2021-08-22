@@ -1300,6 +1300,8 @@ MonoBehaviour:
   redBlobPrefab:
   - {fileID: 8257122658530824606, guid: 7d6661cc94fdd164c9171cf6e67085af, type: 3}
   - {fileID: 4454833567758310104, guid: 690af4b15bc0da245b8731c87ae0f6a3, type: 3}
+  BackgroudMusic:
+  - {fileID: 8300000, guid: d5b5b496b9a12ad409f39d009ba7ae62, type: 3}
 --- !u!82 &1867500861
 AudioSource:
   m_ObjectHideFlags: 0

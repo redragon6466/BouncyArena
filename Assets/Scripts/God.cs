@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Assets.Data;
 using Assets.Services;
+using Assets.Scripts.Data;
 
 namespace Assets
 {
@@ -25,6 +26,9 @@ namespace Assets
         GameObject[] blueBlobPrefab;
         [SerializeField]
         GameObject[] redBlobPrefab;
+
+        [SerializeField]
+        AudioClip[] BackgroudMusic;
 
 
         int[] _blueBlobSelectedPrefabIndex = new int[3];
@@ -51,21 +55,13 @@ namespace Assets
         private Vector3 _selectedCameraPos;
         private Vector3 _selectedCameraRot;
 
-        //ARENA POSITIONS
-        private Vector3[] _testArenaOnePos = { new Vector3(-16, 5, 15) , new Vector3(0, 5, 15), new Vector3(16, 5, 15), };
-        private Vector3[] _testArenaTwoPos = { new Vector3(-16, 5, -10), new Vector3(0, 5, -10), new Vector3(16, 5, -10), };
-        private Vector3 _testCameraPos = new Vector3(-34.9f, 30.2f, 0);
-        private Vector3 _testCameraRot = new Vector3(37.548f, 90f, 0);
-
-        //Shipwreck Island ARENA POSITIONS
-        private Vector3[] _shipwreckIslandOnePos = { new Vector3(-235, 5, 87), new Vector3(-235, 5, 102), new Vector3(-235, 5, 117), };
-        private Vector3[] _shipwreckIslandTwoPos = { new Vector3(-190, 5, 87), new Vector3(-190, 5, 102), new Vector3(-190, 5, 117), };
-        private Vector3 _shipwrechIslandCameraPos = new Vector3(-216, 23, 25);
-        private Vector3 _shipwrechIslandCameraRot = new Vector3(10, 0, 0);
+        private ArenaData _debugArena;
+        private List<ArenaData> _arenas;
 
         //LINEUP POSITIONS
-        private Vector2[] _blueStartPos = { new Vector2(-3.67f, 2.76f), new Vector2(-3.67f, -.1f), new Vector2(-3.67f, -3.5f), };
-        private Vector2[] _redStartPos = { new Vector2(3.55f, 2.91f) , new Vector2(3.55f, -.1f), new Vector2(3.55f, -3.5f), };
+        Vector2[] _blueStartPos = { new Vector2(-3.67f, 2.76f), new Vector2(-3.67f, -.1f), new Vector2(-3.67f, -3.5f), };
+        Vector2[] _redStartPos = { new Vector2(3.55f, 2.91f), new Vector2(3.55f, -.1f), new Vector2(3.55f, -3.5f), };
+
 
         private TwitchChatBot tcb;
 
@@ -102,6 +98,7 @@ namespace Assets
         void Start()
         {
             instance = this;
+            SetupArenas();
             StartVsScreen();
 
             //Task.Run(() => StartDatabaseManager());
@@ -365,30 +362,13 @@ namespace Assets
 
         private string ChooseArena()
         {
-            //var map = UnityEngine.Random.Range(1, 3);
-            var map = 2;
-            switch (map)
-            {
-                case 1:
-                    _teamOnePos = _testArenaOnePos;
-                    _teamTwoPos = _testArenaTwoPos;
-                    SelectedCameraPos = _testCameraPos;
-                    SelectedCameraRot = _testCameraRot;
-                    return "TestArenaTwo";
-                case 2:
-                    _teamOnePos = _shipwreckIslandOnePos;
-                    _teamTwoPos = _shipwreckIslandTwoPos;
-                    SelectedCameraPos = _shipwrechIslandCameraPos;
-                    SelectedCameraRot = _shipwrechIslandCameraRot;
-                    return "PreBuiltPirates";
-                case 3:
-                //272.22, 20, -253.15 a good spot
-                default:
-                    break;
-            }
-
-            return "TestArenaTwo";
-
+            var map = UnityEngine.Random.Range(0, _arenas.Count);
+            var arena = _arenas[map];
+            _teamOnePos = arena.TeamOnePos;
+            _teamTwoPos = arena.TeamTwoPos;
+            SelectedCameraPos = arena.CameraPos;
+            SelectedCameraRot = arena.CameraRot;
+            return arena.SceneName;
         }
 
         private void MoveTeams()
@@ -485,6 +465,30 @@ namespace Assets
             Debug.Log(team);
 
             BettingService.Instance.PayoutBets(team);
+        }
+
+        private void SetupArenas()
+        {
+
+            //ARENA POSITIONS
+            Vector3[] testArenaOnePos = { new Vector3(-16, 5, 15), new Vector3(0, 5, 15), new Vector3(16, 5, 15), };
+            Vector3[] testArenaTwoPos = { new Vector3(-16, 5, -10), new Vector3(0, 5, -10), new Vector3(16, 5, -10), };
+            Vector3 testCameraPos = new Vector3(-34.9f, 30.2f, 0);
+            Vector3 testCameraRot = new Vector3(37.548f, 90f, 0);
+
+
+            _debugArena = new ArenaData("TestArenaTwo", testArenaOnePos, testArenaTwoPos, testCameraPos, testCameraRot, BackgroudMusic[0], "Debug Arena");
+
+            //Shipwreck Island ARENA POSITIONS
+            Vector3[] shipwreckIslandOnePos = { new Vector3(-235, 5, 87), new Vector3(-235, 5, 102), new Vector3(-235, 5, 117), };
+            Vector3[] shipwreckIslandTwoPos = { new Vector3(-190, 5, 87), new Vector3(-190, 5, 102), new Vector3(-190, 5, 117), };
+            Vector3 shipwrechIslandCameraPos = new Vector3(-216, 23, 25);
+            Vector3 shipwrechIslandCameraRot = new Vector3(10, 0, 0);
+
+
+            _arenas.Add( new ArenaData("PreBuiltPirates", shipwreckIslandOnePos, shipwreckIslandTwoPos, shipwrechIslandCameraPos, shipwrechIslandCameraRot, BackgroudMusic[0], "Shipwreck Island"));
+
+
         }
     }
 }
