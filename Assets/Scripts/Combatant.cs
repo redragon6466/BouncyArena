@@ -101,7 +101,7 @@ public class Combatant : MonoBehaviour
         {
             _body = GetComponent<Rigidbody>();
         }
-        _body.AddForce(5000f * Time.deltaTime * newVector.x, 500f * Time.deltaTime * newVector.y, 5000f * Time.deltaTime * newVector.z);
+        //_body.AddForce(5000f * Time.deltaTime * newVector.x, 500f * Time.deltaTime * newVector.y, 5000f * Time.deltaTime * newVector.z);
 
         
 
@@ -212,7 +212,9 @@ public class Combatant : MonoBehaviour
                 //Debug.Log(" x: " + newVector.x + " y: " + newVector.y + " z: " + newVector.z);
 
                 //propel the object forward
-                GetComponent<Rigidbody>().AddForce(5000 * newVector.x, 500, 5000 * newVector.z);
+
+                rb.velocity = new Vector3(30 * newVector.x, 10, 30 * newVector.z);
+                //GetComponent<Rigidbody>().AddForce(5000 * newVector.x, 500, 5000 * newVector.z);
             }
 
         }
@@ -269,6 +271,11 @@ public class Combatant : MonoBehaviour
     public int RollToAttack()
     {
         return ClassScript.RollToAttack();
+    }
+
+    public void GenerateStats()
+    {
+        ClassScript.GenerateStats();
     }
 
     

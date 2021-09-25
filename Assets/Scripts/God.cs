@@ -405,10 +405,11 @@ namespace Assets
                 blobT1.transform.localScale = blobT1Script.LineupScale;
                 blobT1Script.Team = 1;
                 blobT1Script.ID = i + 1;
+                blobT1Script.GenerateStats();
                 ((Text)stats.ElementAt(i)).text = string.Format(BlobStatsFormat, i + 1, blobT1Script.GetHealth(), blobT1Script.GetAttack(), blobT1Script.GetDefense());
 
 
-                _redBlobSelectedPrefabIndex[i] = UnityEngine.Random.Range(0, blueBlobPrefab.Length);
+                _redBlobSelectedPrefabIndex[i] = UnityEngine.Random.Range(0, redBlobPrefab.Length);
                 //_redBlobSelectedPrefabIndex[i] = 0;
                 var blobT2 = Instantiate(redBlobPrefab[_redBlobSelectedPrefabIndex[i]], _redStartPos[i], Quaternion.identity);
                 blobT2.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
@@ -502,11 +503,21 @@ namespace Assets
             }
             else
             {
+                //start any that are not already going
                 foreach (var item in res.activeUserEvent)
                 {
                     if (!UserTriggeredService.Instance.AlreadyGoing(item))
                     {
                         UserTriggeredService.Instance.TriggerWeather(item);
+                    }
+                }
+
+                //remove any that fell out
+                foreach (var item in UserTriggeredService.Instance.GetActiveEvents().ToList())
+                {
+                    if (!res.activeUserEvent.Contains(item.ToLower()))
+                    {
+                        UserTriggeredService.Instance.EndWeather(item);
                     }
                 }
             }

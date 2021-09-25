@@ -1455,7 +1455,7 @@ MonoBehaviour:
   TeamOneBlobs: []
   TeamTwoBlobs: []
   blueBlobPrefab:
-  - {fileID: 380277248491167247, guid: 2463573ab65293a4db22fa5f00a2b487, type: 3}
+  - {fileID: 7943655243492035255, guid: 7b398152ca0fbbc458a3f89a58f6ca3b, type: 3}
   redBlobPrefab:
   - {fileID: 8257122658530824606, guid: 7d6661cc94fdd164c9171cf6e67085af, type: 3}
   blueStats: []

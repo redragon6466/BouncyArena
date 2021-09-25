@@ -13,6 +13,11 @@ namespace Assets.Scripts.Class_Scripts
         private List<int> activeAttackModifiers;
         private List<int> activeDefenseModifiers;
 
+
+        private int _attack = 2;
+        private int _defense = 0;
+
+
         #region Unity Methods
         void Start()
         {
@@ -29,16 +34,35 @@ namespace Assets.Scripts.Class_Scripts
 
 
         #region Properties
+
+        protected virtual int MaxAttack
+        {
+            get { return 3; }
+        }
+        protected virtual int MinAttack
+        {
+            get { return 1; }
+        }
+        protected virtual int MaxDefense
+        {
+            get { return 1; }
+        }
+        protected virtual int MinDefense
+        {
+            get { return 0; }
+        }
+
         protected virtual int Attack
         {
-            get { return 2; }
-            set { }
+            get { return _attack; }
+            set { _attack = value; }
         }
 
 
         protected virtual int Defense
         {
-            get { return 13; }
+            get { return _defense; }
+            set { _defense = value; }
         }
 
         protected virtual int HitPoints
@@ -92,6 +116,12 @@ namespace Assets.Scripts.Class_Scripts
             var roll = UnityEngine.Random.Range(1, 20);
 
             return roll + totalMod;
+        }
+
+        public void GenerateStats()
+        {
+            Attack = UnityEngine.Random.Range(MinAttack, MaxAttack+1);
+            Defense = UnityEngine.Random.Range(MinDefense, MaxDefense+1);
         }
 
         public virtual bool IsValidTarget(string name)

@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 7943655243492345171}
   - component: {fileID: 7943655243495209837}
   - component: {fileID: 7943655243494098879}
+  - component: {fileID: 7433828803682140641}
   - component: {fileID: 4989382462864503914}
   - component: {fileID: 2295185064926899113}
+  - component: {fileID: 4697177439363296313}
   m_Layer: 0
   m_Name: BlueBomb
   m_TagString: Untagged
@@ -83,6 +85,22 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!54 &7433828803682140641
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7943655243492035255}
+  serializedVersion: 2
+  m_Mass: 12
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!114 &4989382462864503914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,11 +114,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsMovable: 1
-  ParticleMan: {fileID: 907000687434693351, guid: d39183fd273a126499bdc65a34addb09,
+  ParticleMan: {fileID: 6511596826417746611, guid: a43307429918bf84393c5425c3c423c8,
     type: 3}
   GameScale: {x: 30, y: 30, z: 30}
   LineupScale: {x: 3, y: 3, z: 3}
-  ClassScriptField: {fileID: 0}
+  ClassScriptField: {fileID: 4697177439363296313}
   breakingMaterials: []
   hitCount: 0
 --- !u!135 &2295185064926899113
@@ -116,3 +134,16 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.105033875
   m_Center: {x: 0, y: 0.105033875, z: 0}
+--- !u!114 &4697177439363296313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7943655243492035255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a59c1f3d12a90141800bd3ce30c02f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
