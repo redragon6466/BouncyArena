@@ -12,6 +12,7 @@ using Assets.Data;
 using Assets.Services;
 using Assets.Scripts.Data;
 using System.Threading;
+using Assets.Scripts.Services;
 
 namespace Assets
 {
@@ -29,6 +30,12 @@ namespace Assets
         GameObject[] blueBlobPrefab;
         [SerializeField]
         GameObject[] redBlobPrefab;
+        [SerializeField]
+        GameObject[] blueStats;
+        [SerializeField]
+        GameObject[] redStats;
+        [SerializeField]
+        GameObject[] betDisplay;
 
         [SerializeField]
         AudioClip[] BackgroudMusic;
@@ -39,6 +46,7 @@ namespace Assets
 
         #region Private Variables
 
+        private bool _inLineup = true;
 
         int[] _blueBlobSelectedPrefabIndex = new int[3];
         int[] _redBlobSelectedPrefabIndex = new int[3];
@@ -112,6 +120,8 @@ namespace Assets
         void Start()
         {
             instance = this;
+
+            InvokeRepeating("BeginPing", 1.0f, 1.0f);
             SetupArenas();
             StartVsScreen();
 
@@ -191,6 +201,7 @@ namespace Assets
         {
             //Debug.Log("start vs");
             ChooseArena();
+            _inLineup = true;
             var temp = GameObject.FindWithTag("CountDown");
 
             //Debug.Log(temp != null);
@@ -205,6 +216,7 @@ namespace Assets
             CreateLineup();
             StartCountdown();
 
+
             var audio = GetComponent<AudioSource>();
             audio.clip = LineupMusic;
             audio.Play();
@@ -217,6 +229,7 @@ namespace Assets
 
         public void StartBattle()
         {
+            _inLineup = false;
             var scene = SceneManager.GetSceneByName(_selectedArena.SceneName);
             if (scene == null)
             {
@@ -373,16 +386,15 @@ namespace Assets
             TeamTwoBlobs = new List<Combatant>();
             TeamTwoBlobs.Clear();
 
-            var texts = FindObjectsOfType(typeof(Text)).ToList().OrderBy(x => ((Text)x).text);
+
+            var texts = FindObjectsOfType(typeof(Text)).ToList().Where(x => x.name.Contains("Blob")).OrderBy(x => x.name);
+
             var stats = texts.ToList();
-            stats.RemoveAt(0);
 
             for (int i = 0; i < 3; i++)
             {
                 _blueBlobSelectedPrefabIndex[i] = UnityEngine.Random.Range(0, blueBlobPrefab.Length);
-
                 //_blueBlobSelectedPrefabIndex[i] = 0;
-
 
                 /* Create lineup TODO*/
                 var blobT1 = Instantiate(blueBlobPrefab[_blueBlobSelectedPrefabIndex[i]], _blueStartPos[i], Quaternion.identity);
@@ -432,26 +444,11 @@ namespace Assets
             }
         }
 
-       
-
         private void StartCountdown()
         {
             _vsTimer += VsScreenTime;
 
             //Debug.Log("Start: "+_vsTimer);
-        }
-
-        private void UpdateBalancesOnRoundStart()
-        {
-            /* var bets = BettingService.Instance.GetTeamOneBets();
-             bets.AddRange(BettingService.Instance.GetTeamTwoBets());
-             foreach (var item in bets)
-             {
-                 Debug.Log(DataService.Instance.GetBalance(item.ViewerName));
-                 Debug.Log("Balance subtracted for bet: " + item.ViewerName + "," + item.Amount);
-                 DataService.Instance.UpdateBalance(item.ViewerName, item.Amount * -1);
-                 Debug.Log(DataService.Instance.GetBalance(item.ViewerName));
-             }*/
         }
 
         private void UpdateBalancesOnRoundEnd(int team)
@@ -482,6 +479,37 @@ namespace Assets
 
             _arenas.Add(new ArenaData("PreBuiltPirates", shipwreckIslandOnePos, shipwreckIslandTwoPos, shipwrechIslandCameraPos, shipwrechIslandCameraRot, BackgroudMusic[0], "Shipwreck Island"));
 
+
+        }
+        
+        private void BeginPing()
+        {
+            var res = BettingService.Instance.SendPing();
+            if (res == null)
+            {
+                return;
+            }
+            if (_inLineup)
+            {
+                var texts = FindObjectsOfType(typeof(Text)).ToList().Where(x => x.name.Equals("Team1Bets"));
+                var stats = texts.ToList();
+                ((Text)stats[0]).text = res.blueTeamBets.ToString();
+
+                texts = FindObjectsOfType(typeof(Text)).ToList().Where(x => x.name.Equals("Team2Bets"));
+                stats = texts.ToList();
+                ((Text)stats[0]).text = res.redTeamBets.ToString();
+            }
+            else
+            {
+                foreach (var item in res.activeUserEvent)
+                {
+                    if (UserTriggeredService.Instance.AlreadyGoing(item))
+                    {
+
+                    }
+                }
+            }
+            
 
         }
         #endregion

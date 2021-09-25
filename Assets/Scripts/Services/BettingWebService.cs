@@ -1,10 +1,12 @@
-﻿using Assets.Scripts.Services.Containers;
+﻿using Assets.Scripts.Data;
+using Assets.Scripts.Services.Containers;
 using Assets.Services.Containers;
 using Assets.Services.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -61,6 +63,7 @@ namespace Assets.Services
                 TeamTwoBets.Clear();
                 TeamTwoPool = 1000;
             }
+           
         }
 
         
@@ -68,101 +71,30 @@ namespace Assets.Services
         {
             Task.Factory.StartNew(() => SendHttpWinner(winningTeam));
 
-
         }
 
         void SendHttpWinner(int winningTeam)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(String.Format("https://localhost:44369/Home/PayoutBet?winningTeam={0}", winningTeam));
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            StreamReader reader = new StreamReader(response.GetResponseStream());
+            string str = reader.ReadLine();
+            while (str != null)
+            {
+                Debug.Log(str);
+                str = reader.ReadLine();
+            }
         }
 
-        public List<Bet> GetWinningBets(int winningTeam)
+       public PingResponse SendPing()
         {
-            Debug.Log("Pay Bets");
-            var winning = new List<Tuple<string, int>>();
-            var pool = 0;
-            var pot = TeamOnePool + TeamTwoPool;
-            Debug.Log(pot);
-            var bets = new List<Bet>();
-            if (winningTeam == 1)
-            {
-                lock (teamOnePoolLock)
-                {
-                    pool = TeamOnePool;
-                    bets = TeamOneBets;
-                }
-            }
-            if (winningTeam == 2)
-            {
-                lock (teamTwoPoolLock)
-                {
-                    pool = TeamTwoPool;
-                    bets = TeamTwoBets;
-                }
-                
-            }
-
-            return bets;
-            
-                /*Debug.Log(bets.Count);
-            foreach (var bet in bets)
-            {
-                var payout = (int)((float)bet.Amount / pool * pot);
-                Debug.Log(payout);
-                winning.Add(new Tuple<string, int>(bet.ViewerName, payout));
-            }
-
-            return winning;*/
-        }
-
-        public List<Bet> GetTeamOneBets()
-        {
-            var returned = new List<Bet>();
-            lock (teamOnePoolLock)
-            {
-                returned = new List<Bet>(TeamOneBets);
-            }
-            return returned;
-        }
-
-        public List<Bet> GetTeamTwoBets()
-        {
-            var returned = new List<Bet>();
-            lock (teamTwoPoolLock)
-            {
-
-                returned = new List<Bet>(TeamTwoBets);
-            }
-            return returned;
-        }
-
-        public void AddBetToTeam(string viewername, int amount, int team)
-        {
-            if (amount < 1 || amount > 5000000)
-            {
-                return;
-            }
-            Debug.Log("Add bet to team: " + viewername + ", " + amount + ", " + team);
-            if (team == 1)
-            {
-                var bet = new Bet(viewername, amount);
-                lock (teamOnePoolLock)
-                {
-                    TeamOneBets.Add(bet);
-                    TeamOnePool += amount;
-                }
-            }
-            if (team == 2)
-            {
-                var bet = new Bet(viewername, amount);
-                lock (teamTwoPoolLock)
-                {
-                    TeamTwoBets.Add(bet);
-                    TeamTwoPool += amount;
-                }
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://localhost:44369/Home/PingResponse");
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            StreamReader reader = new StreamReader(response.GetResponseStream());
+            string str = reader.ReadLine();
+            PingResponse pingResponse = JsonConvert.DeserializeObject<PingResponse>(str);
+            return pingResponse;
             }
         }
 
-    }
 }
