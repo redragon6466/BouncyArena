@@ -376,6 +376,7 @@ namespace Assets
             var map = UnityEngine.Random.Range(0, _arenas.Count);
             var arena = _arenas[map];
             _selectedArena = arena;
+            UserTriggeredService.Instance.SetArena(_selectedArena);
             return arena.SceneName;
         }
 
@@ -503,9 +504,9 @@ namespace Assets
             {
                 foreach (var item in res.activeUserEvent)
                 {
-                    if (UserTriggeredService.Instance.AlreadyGoing(item))
+                    if (!UserTriggeredService.Instance.AlreadyGoing(item))
                     {
-
+                        UserTriggeredService.Instance.TriggerWeather(item);
                     }
                 }
             }
