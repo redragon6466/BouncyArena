@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2718206317983018747}
   m_Layer: 0
   m_Name: Particle System
-  m_TagString: Untagged
+  m_TagString: Particle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3853,11 +3853,14 @@ ParticleSystem:
     serializedVersion: 2
     inside: 1
     outside: 0
-    enter: 0
+    enter: 2
     exit: 0
     colliderQueryMode: 0
     radiusScale: 1
-    primitives: []
+    primitives:
+    - {fileID: 8257122658530824603, guid: 7d6661cc94fdd164c9171cf6e67085af, type: 3}
+    - {fileID: 790422674625195400, guid: 02735b95b7b2741409c9cfebd111ddfb, type: 3}
+    - {fileID: 4454833567758568482, guid: 690af4b15bc0da245b8731c87ae0f6a3, type: 3}
   SubModule:
     serializedVersion: 2
     enabled: 0

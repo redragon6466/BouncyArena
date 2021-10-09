@@ -13,6 +13,7 @@ using Assets.Services;
 using Assets.Scripts.Data;
 using System.Threading;
 using Assets.Scripts.Services;
+using TMPro;
 
 namespace Assets
 {
@@ -250,6 +251,7 @@ namespace Assets
             StartCoroutine(StartFade(3, .6f));
 
             MoveTeams();
+            StartCoroutine(DelayByTimeUpdateTeamStatysCoroutine(1));
             IsBattling = true;
 
 
@@ -268,7 +270,7 @@ namespace Assets
             //TODO kickoff music fade here
             var audio = GetComponent<AudioSource>();
             StartCoroutine(StartFade(3, 0));
-
+            ShowWinnerBanner(TeamOneBlobs.Count != 0 ? 1 : 2);
             //add delay????
             StartCoroutine(DelayBytTimeCoroutine(3));
 
@@ -300,6 +302,20 @@ namespace Assets
             Debug.Log("Team " + team + " Wins!");
             Task task = new Task(() => UpdateBalancesOnRoundEnd(team));
             task.Start();
+
+
+            var texts = FindObjectsOfType(typeof(TextMeshProUGUI)).ToList().Where(x => x.name.Equals("BlueTeamWins"));
+            var stats = texts.ToList().FirstOrDefault();
+            if (stats != null)
+            {
+                ((TextMeshProUGUI)stats).gameObject.SetActive(false);
+            }
+            texts = FindObjectsOfType(typeof(TextMeshProUGUI)).ToList().Where(x => x.name.Equals("BlueTeamWins"));
+            stats = texts.ToList().FirstOrDefault();
+            if (stats != null)
+            {
+                ((TextMeshProUGUI)stats).gameObject.SetActive(false);
+            }
 
             SceneManager.LoadScene("Lineup");
             StartCoroutine(DelayOneFrame());
@@ -368,6 +384,50 @@ namespace Assets
             blob.OnDestroy();
             GameObject.Destroy(blob.gameObject);
         }
+
+        public void UpdateTeamStatus()
+        {
+            var blueTeamStatusText = "";
+            foreach (var item in TeamOneBlobs)
+            {
+                blueTeamStatusText += item.name.Substring(0, item.name.Length -7) + ": ";
+                var healthRemaing = item.GetHealth() - item.hitCount;
+                for (int i = 0; i < healthRemaing; i++)
+                {
+                    blueTeamStatusText += "|";
+                }
+                blueTeamStatusText += "\n";
+            }
+
+            var redTeamStatusText = "";
+            foreach (var item in TeamTwoBlobs)
+            {
+                
+                var healthRemaing = item.GetHealth() - item.hitCount;
+                for (int i = 0; i < healthRemaing+1; i++)
+                {
+                    redTeamStatusText += "|";
+                }
+                redTeamStatusText += " :" + item.name.Substring(0, item.name.Length - 7) ;
+
+                redTeamStatusText += "\n";
+            }
+
+            var texts = FindObjectsOfType(typeof(TextMeshProUGUI)).ToList().Where(x => x.name.Equals("BlueTeamStatus"));
+            var stats = texts.ToList().FirstOrDefault();
+            if (stats != null)
+            {
+                ((TextMeshProUGUI)stats).text = blueTeamStatusText;
+            }
+
+            texts = FindObjectsOfType(typeof(TextMeshProUGUI)).ToList().Where(x => x.name.Equals("RedTeamStatus"));
+            stats = texts.ToList().FirstOrDefault();
+            if (stats != null)
+            {
+                ((TextMeshProUGUI)stats).text = redTeamStatusText;
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -418,11 +478,14 @@ namespace Assets
                 blobT2.transform.localScale = blobT2Script.LineupScale;
                 blobT2Script.ID = i + 1 + 3;
                 blobT2Script.Team = 2;
+                blobT2Script.GenerateStats();
                 ((Text)stats.ElementAt(i + 3)).text = string.Format(BlobStatsFormat, i + 3 + 1, blobT2Script.GetHealth(), blobT2Script.GetAttack(), blobT2Script.GetDefense());
 
 
             }
         }
+
+        
 
         private void MoveTeams()
         {
@@ -455,7 +518,6 @@ namespace Assets
 
         private void UpdateBalancesOnRoundEnd(int team)
         {
-            Debug.Log(team);
 
             BettingService.Instance.PayoutBets(team);
         }
@@ -480,7 +542,6 @@ namespace Assets
 
 
             _arenas.Add(new ArenaData("PreBuiltPirates", shipwreckIslandOnePos, shipwreckIslandTwoPos, shipwrechIslandCameraPos, shipwrechIslandCameraRot, BackgroudMusic[0], "Shipwreck Island"));
-
 
         }
         
@@ -521,24 +582,51 @@ namespace Assets
                     }
                 }
             }
-            
+        }
 
+        public void ShowWinnerBanner(int winner)
+        {
+            if (winner == 1)
+            {
+                var texts = Resources.FindObjectsOfTypeAll(typeof(TextMeshProUGUI)).ToList().Where(x => x.name.Equals("BlueTeamWins"));
+                var stats = texts.ToList().FirstOrDefault();
+                if (stats != null)
+                {
+                    ((TextMeshProUGUI)stats).gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                var texts = Resources.FindObjectsOfTypeAll(typeof(TextMeshProUGUI)).ToList().Where(x => x.name.Equals("RedTeamWins"));
+                var stats = texts.ToList().FirstOrDefault();
+                if (stats != null)
+                {
+                    ((TextMeshProUGUI)stats).gameObject.SetActive(true);
+                }
+            }
+
+            
         }
         #endregion
 
         #region Coroutines
         IEnumerator DelayBytTimeCoroutine(float time)
         {
-            //Print the time of when the function is first called.
-            Debug.Log("Started Coroutine at timestamp : " + Time.time);
 
             //yield on a new YieldInstruction that waits for 5 seconds.
             yield return new WaitForSeconds(time);
 
 
-            //After we have waited 5 seconds print the time again.
-            Debug.Log("Finished Coroutine at timestamp : " + Time.time);
             EndBattleTwoEletricbogaloo();
+        }
+
+        IEnumerator DelayByTimeUpdateTeamStatysCoroutine(float time)
+        {
+            //yield on a new YieldInstruction that waits for 5 seconds.
+            yield return new WaitForSeconds(time);
+
+
+            UpdateTeamStatus();
         }
 
         IEnumerator DelayOneFrame()

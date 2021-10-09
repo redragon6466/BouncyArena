@@ -15,7 +15,7 @@ namespace Assets.Scripts.Class_Scripts
 
 
         private int _attack = 2;
-        private int _defense = 0;
+        private int _defense = 10;
 
 
         #region Unity Methods
@@ -45,11 +45,11 @@ namespace Assets.Scripts.Class_Scripts
         }
         protected virtual int MaxDefense
         {
-            get { return 1; }
+            get { return 12; }
         }
         protected virtual int MinDefense
         {
-            get { return 0; }
+            get { return 8; }
         }
 
         protected virtual int Attack

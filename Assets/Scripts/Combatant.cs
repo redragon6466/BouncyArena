@@ -57,8 +57,9 @@ public class Combatant : MonoBehaviour
     float power = 0;
     */
 
+    //TODO cleanup public prop
     [SerializeField]
-    int hitCount = 0;
+    public int hitCount = 0;
 
     int maxSpeed = 500;
 
@@ -159,6 +160,7 @@ public class Combatant : MonoBehaviour
                 }
                 //Debug.Log("I " + gameObject.name + ", Have been hit by " + collisionInfo.collider.name + ", with a roll of " + roll);
                 hitCount++;
+                God.Instance.UpdateTeamStatus();
                 if (hitCount <= ClassScript.GetHealth() && hitCount <= breakingMaterials.Length - 1)
                 {
                     GetComponent<Renderer>().material = breakingMaterials[hitCount];
@@ -224,6 +226,7 @@ public class Combatant : MonoBehaviour
         //Debug.Log("The contact normal is " + test.normal.);
     }
 
+
     #endregion
 
     #region Public Methods
@@ -276,6 +279,33 @@ public class Combatant : MonoBehaviour
     public void GenerateStats()
     {
         ClassScript.GenerateStats();
+    }
+
+    public void InExplosionRange(Combatant bomb)
+    {
+        var roll = bomb.RollToAttack();
+
+        if (roll > ClassScript.GetTotalDefense())
+        {
+
+            //SpawnParticlesOnHit();
+            //var skip = ClassScript.SpecialAttackBehavior(bomb);
+            //if (skip)
+            //{
+               // return;
+            //}
+            //Debug.Log("I " + gameObject.name + ", Have been hit by " + collisionInfo.collider.name + ", with a roll of " + roll);
+            hitCount++;
+            if (hitCount <= ClassScript.GetHealth() && hitCount <= breakingMaterials.Length - 1)
+            {
+                GetComponent<Renderer>().material = breakingMaterials[hitCount];
+            }
+            if (hitCount > ClassScript.GetHealth())
+            {
+                God.Instance.KillBlob(this);
+                return;
+            }
+        }
     }
 
     

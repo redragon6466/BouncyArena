@@ -22,6 +22,7 @@ namespace Assets.Services
         private List<Bet> TeamTwoBets = new List<Bet>();
         private int TeamOnePool = 0;
         private int TeamTwoPool = 0;
+        private int port = 5000;
 
 
 
@@ -75,20 +76,19 @@ namespace Assets.Services
 
         void SendHttpWinner(int winningTeam)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(String.Format("https://localhost:44369/Home/PayoutBet?winningTeam={0}", winningTeam));
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(String.Format("https://localhost:{0}/Home/PayoutBet?winningTeam={1}", port, winningTeam));
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             StreamReader reader = new StreamReader(response.GetResponseStream());
             string str = reader.ReadLine();
             while (str != null)
             {
-                Debug.Log(str);
                 str = reader.ReadLine();
             }
         }
 
        public PingResponse SendPing()
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://localhost:44369/Home/PingResponse");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(String.Format("https://localhost:{0}/Home/PingResponse", port));
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             StreamReader reader = new StreamReader(response.GetResponseStream());
             string str = reader.ReadLine();

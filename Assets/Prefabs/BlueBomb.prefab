@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 4697177439363296313}
   m_Layer: 0
   m_Name: BlueBomb
-  m_TagString: Untagged
+  m_TagString: Combatant
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63,6 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
+  - {fileID: 2100000, guid: 852a70536a630f24b88aee03378d7d67, type: 2}
   - {fileID: 2100000, guid: 852a70536a630f24b88aee03378d7d67, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -114,9 +115,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsMovable: 1
-  ParticleMan: {fileID: 6511596826417746611, guid: a43307429918bf84393c5425c3c423c8,
+  ParticleMan: {fileID: 6511596826417746611, guid: b45f9574f957faa4b9220f3a5ec8fed7,
     type: 3}
-  GameScale: {x: 30, y: 30, z: 30}
+  GameScale: {x: 25, y: 25, z: 25}
   LineupScale: {x: 3, y: 3, z: 3}
   ClassScriptField: {fileID: 4697177439363296313}
   breakingMaterials: []
@@ -128,7 +129,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7943655243492035255}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: edec1de97294bc94ebb1d398997b2a5f, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
